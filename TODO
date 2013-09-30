@@ -1,5 +1,9 @@
 use math.h floating point capabilities
 
-remove old cl* when done
+write configure script
 
-move the repo to "qstats"
+add more stats
+
+stress test and secure for buffer overflows
+
+write man file
