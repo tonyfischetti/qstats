@@ -1,0 +1,13 @@
+
+This doesn't have a configure tool yet, so check the Makefile
+(both in this directory and 'src'), make sure it's to your
+liking, and
+
+    $ make
+    $ make install
+
+
+To uninstall:
+
+    $ make uninstall
+
