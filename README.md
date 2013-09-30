@@ -1,6 +1,6 @@
 # qstats
 
-Quick and first statistics for the UNIX pipeline
+Quick and dirty statistics for the UNIX pipeline
 
 
 ### Introduction
