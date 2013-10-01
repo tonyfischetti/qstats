@@ -38,5 +38,5 @@ substitute commas for newlines and pipe it to the program:
 
 Read "INSTALL" file for more information
 
-$ make
-$ make install
+    $ make
+    $ make install
