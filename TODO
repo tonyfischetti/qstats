@@ -1,4 +1,8 @@
-add frequency capability
+find better way to express frequency table
+
+implement bucketing (using frequency flag)
+
+fix exclusive/inclusive command-line flags/options
 
 use math.h floating point capabilities
 
