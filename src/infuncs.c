@@ -10,7 +10,7 @@ int read_column(double** array){
     double *barray;
 
     barray = (double *) malloc(size * sizeof(double));
-    if(array == NULL){
+    if(barray == NULL){
         fputs("Error allocating memory", stderr);
         exit(EXIT_FAILURE);
     }

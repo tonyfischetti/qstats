@@ -12,7 +12,7 @@ const char *usage_text =
     "UNIX pipeline\n"
     "To use this, pipe or redirect a newline-delimited column of "
     "numerical values to this program."
-    "\nusage: qstats [-amshl] < *stream*\n";
+    "\nusage: qstats [-amshlf] < *stream*\n";
 
 
 int comp_func(const void * a, const void * b) {
@@ -28,12 +28,14 @@ int comp_func(const void * a, const void * b) {
 int main(int argc, char **argv){
 
     static int MEAN_FLAG = false;
-    static int SUMMARY_FLAG = true;
+    static int SUMMARY_FLAG = false;
     static int MEAN_SPECIFIED = false;
     static int SUMMARY_SPECIFIED = false;
     static int ALL_SPECIFIED = false;
     static int LENGTH_SPECIFIED = false;
     static int LENGTH_FLAG = false;
+    static int FREQ_SPECIFIED = false;
+    static int FREQ_FLAG = false;
     double *array;
     double *result;
     double the_min;
@@ -52,6 +54,7 @@ int main(int argc, char **argv){
             {"all", no_argument, 0, 'a'},
             {"mean",    no_argument, 0, 'm'},
             {"summary", no_argument, 0, 's'},
+            {"frequencies", no_argument, 0, 'f'},
             {"help",    no_argument, 0, 'h'},
             {"length",  no_argument, 0, 'l'},
             {0, 0, 0, 0}
@@ -59,7 +62,7 @@ int main(int argc, char **argv){
 
         int option_index = 0;
 
-        c = getopt_long(argc, argv, "asmhl", long_options, &option_index);
+        c = getopt_long(argc, argv, "asfmhl", long_options, &option_index);
 
         if(c == -1)
             break;
@@ -77,6 +80,9 @@ int main(int argc, char **argv){
             case 'l':
                 LENGTH_SPECIFIED = true;
                 break;
+            case 'f':
+                FREQ_SPECIFIED = true;
+                break;
             case 'h':
                 printf("%s\n", usage_text);
                 freopen("/dev/null", "r", stdin);
@@ -91,28 +97,28 @@ int main(int argc, char **argv){
     }
 
     if(ALL_SPECIFIED == true){
-        SUMMARY_FLAG = true;
-        LENGTH_FLAG = true;
-        //MEAN_FLAG = true;
+        SUMMARY_SPECIFIED = true;
+        LENGTH_SPECIFIED = true;
+        FREQ_SPECIFIED = true;
+        MEAN_SPECIFIED = false;
     }
-    else if(MEAN_SPECIFIED == true){
-        SUMMARY_FLAG = false;
+    if(MEAN_SPECIFIED == true){
         MEAN_FLAG = true;
-        LENGTH_FLAG = false;
     }
-    else if(SUMMARY_SPECIFIED == true){
+    if(SUMMARY_SPECIFIED == true){
         MEAN_FLAG = false;
-        LENGTH_FLAG = false;
-    }
+    } 
     if(LENGTH_SPECIFIED == true){
         LENGTH_FLAG = true;
-        if(SUMMARY_SPECIFIED == false){
-            SUMMARY_FLAG = false;
-        }
+    }
+    if(FREQ_SPECIFIED == true){
+        FREQ_FLAG = true;
     }
 
 
     size = read_column(&array);
+    qsort(array, size, sizeof(double), comp_func);
+
 
     if(MEAN_FLAG == true){
         mean = get_mean(array, size);
@@ -121,6 +127,19 @@ int main(int argc, char **argv){
 
     if(LENGTH_FLAG == true){
         printf("\nLength: \5%d\n", size);
+    }
+
+    if(FREQ_FLAG == true){
+        int other_size;
+        double *unis;
+        other_size = get_uniques(array, size, &unis);
+        int *freqs;
+        get_simple_frequencies(array, size, other_size, &freqs);
+
+        int i;
+        for(i = 0; i < other_size; i++){
+            printf("%g\t%d\n", unis[i], freqs[i]);
+        }
     }
 
     if(SUMMARY_FLAG == true){
@@ -134,7 +153,6 @@ int main(int argc, char **argv){
             return EXIT_FAILURE;
         }
 
-        qsort(array, size, sizeof(double), comp_func);
         the_min = array[0];
         the_max = array[size-1];
         result = get_quartiles(array, size);

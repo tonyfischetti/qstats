@@ -14,6 +14,72 @@ double get_mean(double *array, int size){
 }
 
 
+int get_uniques(double *array, int size, double** runiques){
+    /* this function takes a sorted array by reference, it's *
+     * size, and a pointer and the address where the new     *
+     * array of only unique elements is to be stored         */
+    double last_value = array[0];
+    /* have to assume that the array of unique elements *
+     * is the same size as the original                 */
+    double *uniques;
+    uniques = (double *) malloc(size * sizeof(double));
+    int new_size = 1;
+    int old_index;
+    int new_index = 1;
+    uniques[0] = last_value;
+    for(old_index=1; old_index < size; old_index++){
+        if(last_value != array[old_index]){
+            uniques[new_index] = array[old_index];
+            new_index++;
+            new_size++;
+            last_value = array[old_index];
+        }
+    }
+    /* resize array */
+    double *temp;
+    temp = realloc(uniques, new_size * sizeof(double));
+    if(temp == NULL){
+        free(uniques);
+        fputs("Error allocating memory", stderr);
+        exit(EXIT_FAILURE);
+    }
+    /* re-allocation successful */
+    uniques = temp;
+    *runiques = uniques;
+    return(new_size);
+}
+
+
+void get_simple_frequencies(double *bigarray, int bigsize, int unisize, 
+                             int** rfreqs){
+    int *frequencies;
+    frequencies = (int *) malloc(unisize * sizeof(int));
+    double last_value = bigarray[0];
+    frequencies[0] = 1;
+    int old_index;
+    int new_index = 0;
+    for(old_index = 1; old_index < bigsize; old_index++){
+        double current_value = bigarray[old_index];
+        if(current_value == last_value){
+            frequencies[new_index] = frequencies[new_index] + 1;
+        }
+        else{
+            last_value = current_value;
+            new_index++;
+            frequencies[new_index] = 1;
+        }
+    }
+    *rfreqs = frequencies;
+    return;
+}
+
+    
+    
+
+
+
+
+
 double *get_quartiles(double *array, int size){
     /********************************************
      * Takes a sorted array of doubles          *
