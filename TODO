@@ -1,6 +1,6 @@
-find better way to express frequency table
+document statfuncs better
 
-implement bucketing (using frequency flag)
+find better way to express frequency table
 
 use math.h floating point capabilities
 

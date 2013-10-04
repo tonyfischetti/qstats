@@ -8,11 +8,11 @@
 
 
 const char *usage_text = 
-    "\nqstats v0.6 -- quick and dirty statistics tool for the "
+    "\nqstats v0.7 -- quick and dirty statistics tool for the "
     "UNIX pipeline\n"
     "To use this, pipe or redirect a newline-delimited column of "
     "numerical values to this program."
-    "\nusage: qstats [-amshlf] < *stream*\n";
+    "\nusage: qstats [-amshl | -f breaks] < *stream*\n";
 
 
 int comp_func(const void * a, const void * b) {
@@ -36,6 +36,7 @@ int main(int argc, char **argv){
     static int LENGTH_FLAG = false;
     static int FREQ_SPECIFIED = false;
     static int FREQ_FLAG = false;
+    static int FREQ_BREAKS;
     double *array;
     double *result;
     double the_min;
@@ -54,7 +55,7 @@ int main(int argc, char **argv){
             {"all", no_argument, 0, 'a'},
             {"mean",    no_argument, 0, 'm'},
             {"summary", no_argument, 0, 's'},
-            {"frequencies", no_argument, 0, 'f'},
+            {"frequencies", required_argument, 0, 'f'},
             {"help",    no_argument, 0, 'h'},
             {"length",  no_argument, 0, 'l'},
             {0, 0, 0, 0}
@@ -62,12 +63,20 @@ int main(int argc, char **argv){
 
         int option_index = 0;
 
-        c = getopt_long(argc, argv, "asfmhl", long_options, &option_index);
+        c = getopt_long(argc, argv, "asmhlf:", long_options, &option_index);
 
         if(c == -1)
             break;
 
         switch(c){
+            case 0:
+                if (long_options[option_index].flag != 0)
+                    break;
+                printf ("option %s", long_options[option_index].name);
+                if (optarg)
+                    printf (" with arg %s", optarg);
+                printf ("\n");
+                break;
             case 'a':
                 ALL_SPECIFIED = true;
                 break;
@@ -82,6 +91,13 @@ int main(int argc, char **argv){
                 break;
             case 'f':
                 FREQ_SPECIFIED = true;
+                char *res;
+                FREQ_BREAKS = strtol(optarg, &res, 10);
+                if(*res){
+                    fputs("Can't parse frequency breaks, expects integer\n",
+                          stderr);
+                    exit(EXIT_FAILURE);
+                }
                 break;
             case 'h':
                 printf("%s\n", usage_text);
@@ -124,28 +140,10 @@ int main(int argc, char **argv){
 
     size = read_column(&array);
 
-    qsort(array, size, sizeof(double), comp_func);
-
-    int breaks = 20;
-    int *buckets;
-    double *intervals;
-    ret_buckets(size, array, breaks, &buckets, &intervals);
-    int n;
-    for(n = 0; n < breaks; n++){
-        printf("bucket %d:\t%d\n", n+1, buckets[n]);
-    }
-    puts("\nthe intervals");
-    int m;
-    for(m = 0; m < breaks+1; m++){
-        printf("%g\n", intervals[m]);
-    }
-
-
     /* only sort if needed */
     if((SUMMARY_FLAG + FREQ_FLAG) > 0){
         qsort(array, size, sizeof(double), comp_func);
     }
-
 
     if(MEAN_FLAG == true){
         mean = get_mean(array, size);
@@ -157,16 +155,19 @@ int main(int argc, char **argv){
     }
 
     if(FREQ_FLAG == true){
-        int other_size;
-        double *unis;
-        other_size = get_uniques(array, size, &unis);
-        int *freqs;
-        get_simple_frequencies(array, size, other_size, &freqs);
-        
-        int i;
-        for(i = 0; i < other_size; i++){
-            printf("%g\t%d\n", unis[i], freqs[i]);
+        int breaks = FREQ_BREAKS;
+        int *buckets;
+        double *intervals;
+        ret_buckets(size, array, breaks, &buckets, &intervals);
+        int n;
+        for(n = 0; n < breaks; n++){
+            printf("bucket %d:\t%d\n", n+1, buckets[n]);
         }
+        //puts("\nthe intervals");
+        //int m;
+        //for(m = 0; m < breaks+1; m++){
+        //    printf("%g\n", intervals[m]);
+        //}
     }
 
     if(SUMMARY_FLAG == true){

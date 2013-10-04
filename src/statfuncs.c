@@ -3,6 +3,7 @@
 #include <math.h>
 #include <float.h>
 
+
 double get_mean(double *array, int size){
     double sum = 0;
     double mean;
@@ -14,9 +15,8 @@ double get_mean(double *array, int size){
     return(mean);
 }
 
-
-
-void make_intervals(double themin, double themax, int breaks, double** rarray){
+void make_intervals(double themin, double themax, 
+                    int breaks, double** rarray){
     double length = themax - themin;
     double *retarray;
     retarray = (double *) malloc((breaks+1) * sizeof(double));
@@ -35,8 +35,8 @@ void make_intervals(double themin, double themax, int breaks, double** rarray){
 }
 
 
-
-void ret_buckets(int size, double *array, int breaks, int** rarray, double** rinter){
+void ret_buckets(int size, double *array, int breaks, 
+                 int** rarray, double** rinter){
     double *intervals;
     double themin = array[0];
     double themax = array[size-1];
@@ -65,7 +65,6 @@ void ret_buckets(int size, double *array, int breaks, int** rarray, double** rin
     intervals[breaks]--;
     *rarray = buckets;
 }
-
 
 
 int get_uniques(double *array, int size, double** runiques){
@@ -103,29 +102,6 @@ int get_uniques(double *array, int size, double** runiques){
     return(new_size);
 }
 
-
-void get_simple_frequencies(double *bigarray, int bigsize, int unisize, 
-                             int** rfreqs){
-    int *frequencies;
-    frequencies = (int *) malloc(unisize * sizeof(int));
-    double last_value = bigarray[0];
-    frequencies[0] = 1;
-    int old_index;
-    int new_index = 0;
-    for(old_index = 1; old_index < bigsize; old_index++){
-        double current_value = bigarray[old_index];
-        if(current_value == last_value){
-            frequencies[new_index] = frequencies[new_index] + 1;
-        }
-        else{
-            last_value = current_value;
-            new_index++;
-            frequencies[new_index] = 1;
-        }
-    }
-    *rfreqs = frequencies;
-    return;
-}
 
 double *get_quartiles(double *array, int size){
     /********************************************

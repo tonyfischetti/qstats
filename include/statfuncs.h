@@ -9,8 +9,4 @@ void ret_buckets(int, double*, int, int**, double**);
 
 double *get_quartiles(double*, int);
 
-int get_uniques(double*, int, double**);
-
-void get_simple_frequencies(double*, int, int, int**);
-
 #endif
