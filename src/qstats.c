@@ -8,7 +8,7 @@
 
 
 const char *usage_text = 
-    "\nqstats v0.5.9 -- quick and dirty statistics tool for the "
+    "\nqstats v0.6 -- quick and dirty statistics tool for the "
     "UNIX pipeline\n"
     "To use this, pipe or redirect a newline-delimited column of "
     "numerical values to this program."
@@ -100,7 +100,7 @@ int main(int argc, char **argv){
         SUMMARY_SPECIFIED = true;
         LENGTH_SPECIFIED = true;
         FREQ_SPECIFIED = true;
-        MEAN_SPECIFIED = false;
+        MEAN_SPECIFIED = true;
     }
     if(MEAN_SPECIFIED == true){
         MEAN_FLAG = true;
@@ -115,18 +115,16 @@ int main(int argc, char **argv){
     if(FREQ_SPECIFIED == true){
         FREQ_FLAG = true;
     }
+    if((FREQ_SPECIFIED + LENGTH_SPECIFIED + 
+        SUMMARY_SPECIFIED + MEAN_SPECIFIED) == 0){
+        printf("nothing specified\n");
+    }
 
 
     size = read_column(&array);
 
     qsort(array, size, sizeof(double), comp_func);
 
-    /*
-    int i;
-    for(i = 0; i < size; i++){
-        printf("%g\n", array[i]);
-    }
-    */
 
     if(MEAN_FLAG == true){
         mean = get_mean(array, size);
@@ -134,10 +132,9 @@ int main(int argc, char **argv){
     }
 
     if(LENGTH_FLAG == true){
-        printf("\nLength: \5%d\n", size);
+        printf("\nLength: \5%d\n\n", size);
     }
 
-    // DEBUGGING
     if(FREQ_FLAG == true){
         int other_size;
         double *unis;
