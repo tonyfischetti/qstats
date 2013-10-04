@@ -118,8 +118,15 @@ int main(int argc, char **argv){
 
 
     size = read_column(&array);
+
     qsort(array, size, sizeof(double), comp_func);
 
+    /*
+    int i;
+    for(i = 0; i < size; i++){
+        printf("%g\n", array[i]);
+    }
+    */
 
     if(MEAN_FLAG == true){
         mean = get_mean(array, size);

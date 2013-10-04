@@ -16,6 +16,7 @@ double get_mean(double *array, int size){
 
 // DEBUGGING
 // TRACED ONE BUG TO INCORRECT COMPARISON OF FLOATING POINT NUMBERS
+// THE OTHER BUG INVOLVES *EXTREMELY* LARGE NUMBERS
 int get_uniques(double *array, int size, double** runiques){
     /* this function takes a sorted array by reference, it's *
      * size, and a pointer and the address where the new     *
@@ -30,10 +31,10 @@ int get_uniques(double *array, int size, double** runiques){
     int new_index = 1;
     uniques[0] = last_value;
     for(old_index=1; old_index < size; old_index++){
-        printf("We are on %f\n", array[old_index]);
-        printf("Last was %f\n", last_value);
+        printf("We are on %g\n", array[old_index]);
+        printf("Last was %g\n", last_value);
         //if(last_value != array[old_index]){
-        if(!(fabs(last_value - array[old_index]) <= .01)){
+        if(!(fabs(last_value - array[old_index]) <= .0001)){
             printf("It was not experienced before\n");
             uniques[new_index] = array[old_index];
             new_index++;
@@ -46,7 +47,7 @@ int get_uniques(double *array, int size, double** runiques){
         printf("\n");
     }
     /* resize array */
-    /*
+    
     double *temp;
     temp = realloc(uniques, new_size * sizeof(double));
     if(temp == NULL){
@@ -54,7 +55,7 @@ int get_uniques(double *array, int size, double** runiques){
         fputs("Error allocating memory", stderr);
         exit(EXIT_FAILURE);
     }
-    */
+    
     /* re-allocation successful */
     //uniques = temp;
     *runiques = uniques;
