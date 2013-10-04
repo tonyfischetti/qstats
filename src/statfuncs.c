@@ -15,6 +15,59 @@ double get_mean(double *array, int size){
 }
 
 
+
+void make_intervals(double themin, double themax, int breaks, double** rarray){
+    double length = themax - themin;
+    double *retarray;
+    retarray = (double *) malloc((breaks+1) * sizeof(double));
+    int retarrayindex = 0;
+    double upto = themin;
+    double thedivide = length/breaks-1;
+    int i;
+    for(i=0; i < breaks; i++){
+        double newupto = i*thedivide+((i-1)*1)+themin+1;
+        retarray[retarrayindex] = newupto;
+        retarrayindex++;
+        upto = newupto;
+    }
+    retarray[retarrayindex] = themax+1;
+    *rarray = retarray;
+}
+
+
+
+void ret_buckets(int size, double *array, int breaks, int** rarray, double** rinter){
+    double *intervals;
+    double themin = array[0];
+    double themax = array[size-1];
+    make_intervals(themin, themax, breaks, &intervals);
+    *rinter = intervals;
+    int *buckets;
+    buckets = (int *) malloc(breaks * sizeof(int));
+    int j;
+    for(j = 0; j < breaks; j++){
+        buckets[j] = 0;
+    }
+    int place_in_bucket = 0;
+    int the_bound = 1;
+    int k;
+    for(k = 0; k < size; k++){
+        double num = array[k];
+        if(num < intervals[the_bound]){
+            buckets[place_in_bucket]++;
+        }
+        else{
+            the_bound++;
+            place_in_bucket++;
+            buckets[place_in_bucket]++;
+        }
+    }
+    intervals[breaks]--;
+    *rarray = buckets;
+}
+
+
+
 int get_uniques(double *array, int size, double** runiques){
     /* this function takes a sorted array by reference, it's *
      * size, and a pointer and the address where the new     *

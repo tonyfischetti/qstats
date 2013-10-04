@@ -124,6 +124,23 @@ int main(int argc, char **argv){
 
     size = read_column(&array);
 
+    qsort(array, size, sizeof(double), comp_func);
+
+    int breaks = 20;
+    int *buckets;
+    double *intervals;
+    ret_buckets(size, array, breaks, &buckets, &intervals);
+    int n;
+    for(n = 0; n < breaks; n++){
+        printf("bucket %d:\t%d\n", n+1, buckets[n]);
+    }
+    puts("\nthe intervals");
+    int m;
+    for(m = 0; m < breaks+1; m++){
+        printf("%g\n", intervals[m]);
+    }
+
+
     /* only sort if needed */
     if((SUMMARY_FLAG + FREQ_FLAG) > 0){
         qsort(array, size, sizeof(double), comp_func);
