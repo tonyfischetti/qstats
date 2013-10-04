@@ -107,6 +107,7 @@ int main(int argc, char **argv){
     }
     if(SUMMARY_SPECIFIED == true){
         MEAN_FLAG = false;
+        SUMMARY_FLAG = true;
     } 
     if(LENGTH_SPECIFIED == true){
         LENGTH_FLAG = true;
@@ -129,17 +130,25 @@ int main(int argc, char **argv){
         printf("\nLength: \5%d\n", size);
     }
 
+    // DEBUGGING
     if(FREQ_FLAG == true){
         int other_size;
         double *unis;
         other_size = get_uniques(array, size, &unis);
+        
+        ///// DEBUG ////
+        //printf("Size is %d\n", other_size);
+        ////////////////
+
         int *freqs;
         get_simple_frequencies(array, size, other_size, &freqs);
-
+        
+        /*
         int i;
         for(i = 0; i < other_size; i++){
             printf("%g\t%d\n", unis[i], freqs[i]);
         }
+        */
     }
 
     if(SUMMARY_FLAG == true){

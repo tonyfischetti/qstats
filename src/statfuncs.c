@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <float.h>
 
 double get_mean(double *array, int size){
     double sum = 0;
@@ -13,7 +14,8 @@ double get_mean(double *array, int size){
     return(mean);
 }
 
-
+// DEBUGGING
+// TRACED ONE BUG TO INCORRECT COMPARISON OF FLOATING POINT NUMBERS
 int get_uniques(double *array, int size, double** runiques){
     /* this function takes a sorted array by reference, it's *
      * size, and a pointer and the address where the new     *
@@ -28,14 +30,23 @@ int get_uniques(double *array, int size, double** runiques){
     int new_index = 1;
     uniques[0] = last_value;
     for(old_index=1; old_index < size; old_index++){
-        if(last_value != array[old_index]){
+        printf("We are on %f\n", array[old_index]);
+        printf("Last was %f\n", last_value);
+        //if(last_value != array[old_index]){
+        if(!(fabs(last_value - array[old_index]) <= .01)){
+            printf("It was not experienced before\n");
             uniques[new_index] = array[old_index];
             new_index++;
             new_size++;
             last_value = array[old_index];
         }
+        else{
+            printf("We've seen this before\n");
+        }
+        printf("\n");
     }
     /* resize array */
+    /*
     double *temp;
     temp = realloc(uniques, new_size * sizeof(double));
     if(temp == NULL){
@@ -43,9 +54,19 @@ int get_uniques(double *array, int size, double** runiques){
         fputs("Error allocating memory", stderr);
         exit(EXIT_FAILURE);
     }
+    */
     /* re-allocation successful */
-    uniques = temp;
+    //uniques = temp;
     *runiques = uniques;
+
+    //////// DEBUG ////////
+    int i;
+    for(i = 0; i < new_size; i++){
+        printf("%g\n", uniques[i]);
+    }
+    //////// DEBUG ////////
+
+
     return(new_size);
 }
 
@@ -147,7 +168,6 @@ double *get_quartiles(double *array, int size){
     ret_ar[2] = third_quartile;
     return(ret_ar);
 }
-
 
 
 
