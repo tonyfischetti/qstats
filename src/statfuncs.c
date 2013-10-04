@@ -74,7 +74,6 @@ void get_simple_frequencies(double *bigarray, int bigsize, int unisize,
     return;
 }
 
-
 double *get_quartiles(double *array, int size){
     /********************************************
      * Takes a sorted array of doubles          *
@@ -85,56 +84,41 @@ double *get_quartiles(double *array, int size){
     double median;
     double first_quartile;
     double third_quartile;
-    if(size % 2 == 0){
-        int the_mid = size/2;
-        median = (array[the_mid-1] + array[the_mid]) / 2;
-        int p;
-        double e_first_half[the_mid];
-        for(p = 0; p < the_mid; p++){
-            e_first_half[p] = array[p];
-        }
-        int q;
-        double e_second_half[the_mid];
-        for(q = the_mid; q < size; q++){
-           e_second_half[q-the_mid] = array[q];
-        }
-        if(the_mid % 2 == 0){
-            int new_mid = the_mid/2;
-            first_quartile = (e_first_half[new_mid-1] + 
-                              e_first_half[new_mid]) / 2;
-            third_quartile = (e_second_half[new_mid-1] +
-                              e_second_half[new_mid]) / 2;
+    if(size % 2 == 1){
+        int imid = floor(size/2);
+        median = array[imid];
+        if(imid % 2 == 1){
+            int i1q = floor(imid/2);
+            int i3q = imid + 1 + i1q;
+            first_quartile = array[i1q];
+            third_quartile = array[i3q];
         }
         else{
-            int new_mid = floor(the_mid/2);
-            first_quartile = e_first_half[new_mid];
-            third_quartile = e_second_half[new_mid];
+            int i1qb = imid/2 - 1;
+            int i1qa = i1qb + 1;
+            int i3qb = i1qb + 1 + imid;
+            int i3qa = i3qb + 1;
+            first_quartile = ((array[i1qb] + array[i1qa]) / 2);
+            third_quartile = ((array[i3qb] + array[i3qa]) / 2);
         }
     }
     else{
-        int the_mid = floor(size/2);
-        double first_half[the_mid-1];
-        int j;
-        for(j = 0; j < the_mid; j++){
-            first_half[j] = array[j];
-        }
-        double second_half[the_mid-1];
-        int g;
-        for(g = the_mid; g < size-1; g++){
-            second_half[g-the_mid] = array[g+1];
-        }
-        median = array[the_mid];
-        if(the_mid % 2 == 0){
-            int new_mid = the_mid/2;
-            first_quartile = (first_half[new_mid-1] + 
-                              first_half[new_mid]) / 2;
-            third_quartile = (second_half[new_mid-1] +
-                              second_half[new_mid]) / 2;
+        int imida = size/2;
+        int imidb = imida-1;
+        median = ((array[imidb] + array[imida]) / 2);
+        if(imida % 2 == 0){
+            int i1qb = imida/2 - 1;
+            int i1qa = i1qb + 1;
+            int i3qb = i1qb + imida;
+            int i3qa = i3qb + 1;
+            first_quartile = ((array[i1qb] + array[i1qa]) / 2);
+            third_quartile = ((array[i3qb] + array[i3qa]) / 2);
         }
         else{
-            int new_mid = floor(the_mid/2);
-            first_quartile = first_half[new_mid];
-            third_quartile = second_half[new_mid];
+            int i1q = imidb / 2;
+            int i3q = i1q + imida;
+            first_quartile = array[i1q];
+            third_quartile = array[i3q];
         }
     }
     ret_ar[0] = first_quartile;
@@ -142,6 +126,4 @@ double *get_quartiles(double *array, int size){
     ret_ar[2] = third_quartile;
     return(ret_ar);
 }
-
-
 

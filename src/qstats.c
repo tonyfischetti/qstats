@@ -117,13 +117,17 @@ int main(int argc, char **argv){
     }
     if((FREQ_SPECIFIED + LENGTH_SPECIFIED + 
         SUMMARY_SPECIFIED + MEAN_SPECIFIED) == 0){
-        printf("nothing specified\n");
+        /* summary is default */
+        SUMMARY_FLAG = true;
     }
 
 
     size = read_column(&array);
 
-    qsort(array, size, sizeof(double), comp_func);
+    /* only sort if needed */
+    if((SUMMARY_FLAG + FREQ_FLAG) > 0){
+        qsort(array, size, sizeof(double), comp_func);
+    }
 
 
     if(MEAN_FLAG == true){
@@ -151,7 +155,6 @@ int main(int argc, char **argv){
     if(SUMMARY_FLAG == true){
 
         mean = get_mean(array, size);
-
         /* if the size is less than four, no meaningful
            summary can be made */
         if(size < 4){
