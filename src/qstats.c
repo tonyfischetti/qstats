@@ -8,7 +8,7 @@
 
 
 const char *usage_text = 
-    "\nqstats v0.5.2 -- quick and dirty statistics tool for the "
+    "\nqstats v0.5.9 -- quick and dirty statistics tool for the "
     "UNIX pipeline\n"
     "To use this, pipe or redirect a newline-delimited column of "
     "numerical values to this program."
@@ -142,20 +142,13 @@ int main(int argc, char **argv){
         int other_size;
         double *unis;
         other_size = get_uniques(array, size, &unis);
-        
-        ///// DEBUG ////
-        //printf("Size is %d\n", other_size);
-        ////////////////
-
         int *freqs;
         get_simple_frequencies(array, size, other_size, &freqs);
         
-        /*
         int i;
         for(i = 0; i < other_size; i++){
             printf("%g\t%d\n", unis[i], freqs[i]);
         }
-        */
     }
 
     if(SUMMARY_FLAG == true){

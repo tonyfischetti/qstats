@@ -3,7 +3,7 @@
 
 #define CHUNK 300
 
-int read_column(double** array){
+int read_column(double** rarray){
 
     double current;
     char line[50];
@@ -40,9 +40,19 @@ int read_column(double** array){
             // re-allocation successful
             barray = temp;
         }
-        //size = index;
-        *array = barray;
     }
     size = index;
+
+    // resize to not waste memory
+    double *temp;
+    temp = realloc(barray, size * sizeof(double));
+    if(temp == NULL){
+        free(barray);
+        fputs("Error allocating memory", stderr);
+        exit(EXIT_FAILURE);
+    }
+    barray = temp;
+    *rarray = barray;
     return(size);
 }
+
