@@ -1,3 +1,5 @@
+Replace == true redundancy
+
 document statfuncs better
 
 find better way to express frequency table
@@ -11,4 +13,5 @@ add more stats
 write man file
 
 add author and license info the the source files
+
 

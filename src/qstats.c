@@ -5,14 +5,15 @@
 #include <stdbool.h>
 #include "statfuncs.h"
 #include "infuncs.h"
+#include "graphfuncs.h"
 
 
 const char *usage_text = 
-    "\nqstats v0.7 -- quick and dirty statistics tool for the "
+    "\nqstats v0.8 -- quick and dirty statistics tool for the "
     "UNIX pipeline\n"
     "To use this, pipe or redirect a newline-delimited column of "
     "numerical values to this program."
-    "\nusage: qstats [-amshl | -f breaks] < *stream*\n";
+    "\nusage: qstats [-amshl | -f breaks | -h breaks] < *stream*\n";
 
 
 int comp_func(const void * a, const void * b) {
@@ -37,6 +38,7 @@ int main(int argc, char **argv){
     static int FREQ_SPECIFIED = false;
     static int FREQ_FLAG = false;
     static int FREQ_BREAKS;
+    static int BARS_SPECIFIED = false;
     double *array;
     double *result;
     double the_min;
@@ -47,6 +49,7 @@ int main(int argc, char **argv){
     double the_max;
     int size;
     int c;
+
    
     /* process command-line arguments */ 
     while(1){
@@ -56,6 +59,7 @@ int main(int argc, char **argv){
             {"mean",    no_argument, 0, 'm'},
             {"summary", no_argument, 0, 's'},
             {"frequencies", required_argument, 0, 'f'},
+            {"bars", required_argument, 0, 'b'},
             {"help",    no_argument, 0, 'h'},
             {"length",  no_argument, 0, 'l'},
             {0, 0, 0, 0}
@@ -63,7 +67,8 @@ int main(int argc, char **argv){
 
         int option_index = 0;
 
-        c = getopt_long(argc, argv, "asmhlf:", long_options, &option_index);
+        c = getopt_long(argc, argv, "asmhlf:b:", 
+                        long_options, &option_index);
 
         if(c == -1)
             break;
@@ -95,6 +100,17 @@ int main(int argc, char **argv){
                 FREQ_BREAKS = strtol(optarg, &res, 10);
                 if(*res){
                     fputs("Can't parse frequency breaks, expects integer\n",
+                          stderr);
+                    exit(EXIT_FAILURE);
+                }
+                break;
+            case 'b':
+                FREQ_SPECIFIED = true;
+                BARS_SPECIFIED = true;
+                char *res2;
+                FREQ_BREAKS = strtol(optarg, &res2, 10);
+                if(*res2){
+                    fputs("Can't parse barchart breaks, expects integer\n",
                           stderr);
                     exit(EXIT_FAILURE);
                 }
@@ -159,15 +175,20 @@ int main(int argc, char **argv){
         int *buckets;
         double *intervals;
         ret_buckets(size, array, breaks, &buckets, &intervals);
-        int n;
-        for(n = 0; n < breaks; n++){
-            printf("bucket %d:\t%d\n", n+1, buckets[n]);
+        if(BARS_SPECIFIED == true){
+            draw_bars(buckets, breaks);
         }
-        //puts("\nthe intervals");
-        //int m;
-        //for(m = 0; m < breaks+1; m++){
-        //    printf("%g\n", intervals[m]);
-        //}
+        else{
+            int n;
+            for(n = 0; n < breaks; n++){
+                printf("bucket %d:\t%d\n", n+1, buckets[n]);
+            }
+            //puts("\nthe intervals");
+            //int m;
+            //for(m = 0; m < breaks+1; m++){
+            //    printf("%g\n", intervals[m]);
+            //}
+        }
     }
 
     if(SUMMARY_FLAG == true){
