@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <math.h>
 
+
 void draw_bars(int *array, int size){
     struct winsize w;
     ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
@@ -31,13 +32,7 @@ void draw_bars(int *array, int size){
     }
 
     double factor;
-    if(wiggle < themax){
-        puts("its bigger");
-        factor = floor(themax/wiggle);
-    }
-    else{ 
-        factor = floor(wiggle/themax);
-    }
+    factor = wiggle/themax;
     
     for(i = 0; i < size; i++){
         int thenum = perc[i];
