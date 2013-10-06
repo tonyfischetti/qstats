@@ -9,7 +9,7 @@
 
 
 const char *header_text = 
-    "\nqstats v0.3.1 -- quick and dirty statistics tool for the "
+    "\nqstats v0.3.4 -- quick and dirty statistics tool for the "
     "Unix pipeline\n";
 
 const char *usage_text =
@@ -48,7 +48,7 @@ int main(int argc, char **argv){
 
    
     /* process command-line arguments */ 
-    while(1){
+    while(true){
         static struct option long_options[] = 
         {
             {"all", no_argument, 0, 'a'},
@@ -164,7 +164,7 @@ int main(int argc, char **argv){
     }
 
     if(LENGTH_FLAG){
-        printf("\nLength: \5%d\n\n", size);
+        printf("%d\n", size);
     }
 
     if(FREQ_FLAG){
@@ -200,13 +200,16 @@ int main(int argc, char **argv){
         double first_quartile = quartile_call_result[0];
         double median = quartile_call_result[1];
         double third_quartile = quartile_call_result[2];
-        printf("\n");
+        double stddev = get_standard_deviation(data_array, mean, size);
         printf("Min.     %g\n", the_min);
         printf("1st Qu.  %g\n", first_quartile);
         printf("Median   %g\n", median);
         printf("Mean     %g\n", mean);
         printf("3rd Qu.  %g\n", third_quartile);
-        printf("Max.     %g\n\n", the_max);
+        printf("Max.     %g\n", the_max);
+        printf("Range    %g\n", (the_max - the_min));
+        printf("Std Dev. %g\n", stddev);
+        printf("Length   %d\n", size);
     }
 
     return EXIT_SUCCESS;

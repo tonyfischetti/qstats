@@ -1,6 +1,4 @@
-add range and stddev to summary statistics
-
-Replace == true redundancy
+Create more flags (like for stddev) and exclusionary logic
 
 use math.h floating point capabilities
 

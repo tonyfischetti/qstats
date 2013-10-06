@@ -16,6 +16,22 @@ double get_mean(double *data_array, int size){
     return(mean);
 }
 
+double get_standard_deviation(double *data_array, double mean, int size){
+    /* Takes data array, mean and size and gives standard deviation */
+    double stddev;
+    double sum_of_squares = 0;
+    double mean_sum_of_squares;
+    int i;
+    for(i = 0; i < size; i++){
+        sum_of_squares += pow((data_array[i] - mean), 2);
+    }
+    mean_sum_of_squares = sum_of_squares / size;
+    stddev = sqrt(mean_sum_of_squares); 
+    printf("sum of squares: %g\n", sum_of_squares);
+    printf("mean ss: %g\n", mean_sum_of_squares);
+    return(stddev);
+}
+
 void make_intervals(double themin, double themax, 
                     int breaks, double** delivery_array){
     /****************************************************

@@ -3,6 +3,8 @@
 
 double get_mean(double*, int);
 
+double get_standard_deviation(double*, double, int);
+
 void make_intervals(double*, double, int, double**);
 
 void deliver_frequencies(int, double*, int, int**, double**);
