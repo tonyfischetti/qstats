@@ -3,7 +3,7 @@
 
 #define CHUNK 300
 
-int read_column(double** rarray){
+int read_column(double** delivery_array){
     /***************************************
      * this is called by the main program  *
      * with a pointer to the array where   *
@@ -15,10 +15,10 @@ int read_column(double** rarray){
     char line[50];
     int index = 0;
     int size = 50;
-    double *barray;
+    double *build_array;
 
-    barray = (double *) malloc(size * sizeof(double));
-    if(barray == NULL){
+    build_array = (double *) malloc(size * sizeof(double));
+    if(build_array == NULL){
         fputs("Error allocating memory", stderr);
         exit(EXIT_FAILURE);
     }
@@ -30,35 +30,35 @@ int read_column(double** rarray){
             fputs("Error parsing numerics\n", stderr);
             exit(EXIT_FAILURE);
         }
-        barray[index] = current;
+        build_array[index] = current;
         index++;
         /* if we ran out of space */
         if(index == size){
             /* try to allocate more memory */
             double *temp;
             size += CHUNK;
-            temp = realloc(barray, size * sizeof(double));
+            temp = realloc(build_array, size * sizeof(double));
             if(temp == NULL){
-                free(barray);
+                free(build_array);
                 fputs("Error allocating memory", stderr);
                 exit(EXIT_FAILURE);
             }
             /* reallocation successful */
-            barray = temp;
+            build_array = temp;
         }
     }
     size = index;
 
     /* resize to not waste memory */
     double *temp;
-    temp = realloc(barray, size * sizeof(double));
+    temp = realloc(build_array, size * sizeof(double));
     if(temp == NULL){
-        free(barray);
+        free(build_array);
         fputs("Error allocating memory", stderr);
         exit(EXIT_FAILURE);
     }
-    barray = temp;
-    *rarray = barray;
+    build_array = temp;
+    *delivery_array = build_array;
     return(size);
 }
 

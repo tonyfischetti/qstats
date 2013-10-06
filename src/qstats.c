@@ -8,15 +8,18 @@
 #include "graphfuncs.h"
 
 
-const char *usage_text = 
-    "\nqstats v0.3 -- quick and dirty statistics tool for the "
-    "Unix pipeline\n"
-    "To use this, pipe or redirect a newline-delimited column of "
-    "numerical values to this program."
+const char *header_text = 
+    "\nqstats v0.3.1 -- quick and dirty statistics tool for the "
+    "Unix pipeline\n";
+
+const char *usage_text =
     "\nusage: qstats [-amshl | -f breaks | -h breaks] < *stream*\n";
 
 
 int comp_func(const void * a, const void * b) {
+    /*******************************************************
+     * sorting function to be used for qsorting data array *
+     *******************************************************/
     double *x = (double *) a;
     double *y = (double *) b;
     if (*x < *y){
@@ -41,12 +44,6 @@ int main(int argc, char **argv){
     static int BARS_SPECIFIED = false;
     double *array;
     double *result;
-    double the_min;
-    double first_quartile;
-    double median;
-    double mean;
-    double third_quartile;
-    double the_max;
     int size;
     int c;
 
@@ -116,6 +113,7 @@ int main(int argc, char **argv){
                 }
                 break;
             case 'h':
+                printf("%s", header_text);
                 printf("%s\n", usage_text);
                 freopen("/dev/null", "r", stdin);
                 exit(EXIT_FAILURE);
@@ -162,7 +160,7 @@ int main(int argc, char **argv){
     }
 
     if(MEAN_FLAG == true){
-        mean = get_mean(array, size);
+        double mean = get_mean(array, size);
         printf("%g\n", mean);
     }
 
@@ -174,37 +172,34 @@ int main(int argc, char **argv){
         int breaks = FREQ_BREAKS;
         int *buckets;
         double *intervals;
-        ret_buckets(size, array, breaks, &buckets, &intervals);
+        deliver_frequencies(size, array, breaks, &buckets, &intervals);
         if(BARS_SPECIFIED == true){
             draw_bars(buckets, breaks);
         }
         else{
             int n;
             for(n = 0; n < breaks; n++){
-                printf("bucket %d:\t%d\n", n+1, buckets[n]);
+                printf("[%.01f - %0.1f):\t\t%d\n", intervals[n], 
+                                                   intervals[n+1],
+                                                   buckets[n]);
             }
-            //puts("\nthe intervals");
-            //int m;
-            //for(m = 0; m < breaks+1; m++){
-            //    printf("%g\n", intervals[m]);
-            //}
         }
     }
 
     if(SUMMARY_FLAG == true){
-        mean = get_mean(array, size);
-        /* if the size is less than four, no meaningful
+        double mean = get_mean(array, size);
+        /* if the size is less than five, no meaningful
            summary can be made */
-        if(size < 4){
+        if(size < 5){
             fputs("Input too small for meaningful summary\n", stderr);
             return EXIT_FAILURE;
         }
-        the_min = array[0];
-        the_max = array[size-1];
+        double the_min = array[0];
+        double the_max = array[size-1];
         result = get_quartiles(array, size);
-        first_quartile = result[0];
-        median = result[1];
-        third_quartile = result[2];
+        double first_quartile = result[0];
+        double median = result[1];
+        double third_quartile = result[2];
         printf("\n");
         printf("Min.     %g\n", the_min);
         printf("1st Qu.  %g\n", first_quartile);

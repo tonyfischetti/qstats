@@ -1,3 +1,5 @@
+add range and stddev to summary statistics
+
 Replace == true redundancy
 
 document statfuncs better

@@ -5,6 +5,7 @@
 
 
 double get_mean(double *array, int size){
+    /* self-explanatory */
     double sum = 0;
     double mean;
     int i;
@@ -16,31 +17,37 @@ double get_mean(double *array, int size){
 }
 
 void make_intervals(double themin, double themax, 
-                    int breaks, double** rarray){
-    double length = themax - themin;
-    double *retarray;
-    retarray = (double *) malloc((breaks+1) * sizeof(double));
-    if(retarray == NULL){
+                    int breaks, double** delivery_array){
+    /****************************************************
+     * return an array with 'breaks'+1 equally spaced   *
+     * numbers from min data point to max data point.   *
+     * This will be used for the bucketed frequency     *
+     * counts function.                                 *
+     ****************************************************/
+    double range = themax - themin;
+    double *to_return_array;
+    to_return_array = (double *) malloc((breaks+1) * sizeof(double));
+    if(to_return_array == NULL){
         fputs("Error allocating memory", stderr);
         exit(EXIT_FAILURE);
     }
-    int retarrayindex = 0;
+    int to_return_arrayindex = 0;
     double upto = themin;
-    double thedivide = length/breaks-1;
+    double thedivide = range/breaks-1;
     int i;
     for(i=0; i < breaks; i++){
         double newupto = i*thedivide+((i-1)*1)+themin+1;
-        retarray[retarrayindex] = newupto;
-        retarrayindex++;
+        to_return_array[to_return_arrayindex] = newupto;
+        to_return_arrayindex++;
         upto = newupto;
     }
-    retarray[retarrayindex] = themax+1;
-    *rarray = retarray;
+    to_return_array[to_return_arrayindex] = themax+1;
+    *delivery_array = to_return_array;
 }
 
 
-void ret_buckets(int size, double *array, int breaks, 
-                 int** rarray, double** rinter){
+void deliver_frequencies(int size, double *array, int breaks, 
+                          int** rarray, double** rinter){
     double *intervals;
     double themin = array[0];
     double themax = array[size-1];
@@ -75,10 +82,12 @@ void ret_buckets(int size, double *array, int breaks,
 }
 
 
-int get_uniques(double *array, int size, double** runiques){
-    /* this function takes a sorted array by reference, it's *
+int get_uniques(double *array, int size, double** delivery_uniques){
+    /*********************************************************
+     * this function takes a sorted array by reference, it's *
      * size, and a pointer and the address where the new     *
-     * array of only unique elements is to be stored         */
+     * array of only unique elements is to be stored         *
+     *********************************************************/
     double last_value = array[0];
     /* have to assume that the array of unique elements *
      * is the same size as the original                 */
@@ -106,7 +115,7 @@ int get_uniques(double *array, int size, double** runiques){
     }
     /* re-allocation successful */
     uniques = temp;
-    *runiques = uniques;
+    *delivery_uniques = uniques;
     return(new_size);
 }
 
