@@ -9,8 +9,8 @@
 
 
 const char *usage_text = 
-    "\nqstats v0.8.5 -- quick and dirty statistics tool for the "
-    "UNIX pipeline\n"
+    "\nqstats v0.3 -- quick and dirty statistics tool for the "
+    "Unix pipeline\n"
     "To use this, pipe or redirect a newline-delimited column of "
     "numerical values to this program."
     "\nusage: qstats [-amshl | -f breaks | -h breaks] < *stream*\n";

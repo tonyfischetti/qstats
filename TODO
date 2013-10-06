@@ -14,4 +14,24 @@ write man file
 
 add author and license info the the source files
 
+Have frequency and barchart attempt to guess breaks without arg sturgeon
 
+More robust look into temporary storage files
+
+Be more clear with parsing errors
+
+Have -u mode for utility output
+
+Allow it to also read from a text file if a file name is provided
+*Maybe allow multiple file names and print all of the 
+results out saying which file the results came from
+
+Be robust with respect to data type limits
+
+Rename variables and DOCUMENT
+
+Did I take out dynamic allocation success checks?
+
+Consider using forks more multiprocessing
+
+Fix usage

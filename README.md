@@ -1,16 +1,16 @@
 # qstats
 
-Quick and dirty statistics for the UNIX pipeline
+Quick and dirty statistics for the Unix pipeline
 
 
 ### Introduction
 
-I'm a big fan of using UNIX tools in my data analysis workflow. The only
+I'm a big fan of using Unix tools in my data analysis workflow. The only
 thing I seemed to be missing were a few simple tools for computing 
 descriptive statistics from the command-line. A found myself redirecting
 output to a file and then starting R just to retrieve simple summary stats.
 So, I started this project to make a small command-line executable to
-include in a UNIX shell pipeline to help me and any other data analysts out!
+include in a Unix shell pipeline to help me and any other data analysts out!
 
 
 ### Example usage
