@@ -125,23 +125,23 @@ int main(int argc, char **argv){
         }
     }
 
-    if(ALL_SPECIFIED == true){
+    if(ALL_SPECIFIED){
         SUMMARY_SPECIFIED = true;
         LENGTH_SPECIFIED = true;
         FREQ_SPECIFIED = true;
         MEAN_SPECIFIED = true;
     }
-    if(MEAN_SPECIFIED == true){
+    if(MEAN_SPECIFIED){
         MEAN_FLAG = true;
     }
-    if(SUMMARY_SPECIFIED == true){
+    if(SUMMARY_SPECIFIED){
         MEAN_FLAG = false;
         SUMMARY_FLAG = true;
     } 
-    if(LENGTH_SPECIFIED == true){
+    if(LENGTH_SPECIFIED){
         LENGTH_FLAG = true;
     }
-    if(FREQ_SPECIFIED == true){
+    if(FREQ_SPECIFIED){
         FREQ_FLAG = true;
     }
     if((FREQ_SPECIFIED + LENGTH_SPECIFIED + 
@@ -158,16 +158,16 @@ int main(int argc, char **argv){
         qsort(data_array, size, sizeof(double), comp_func);
     }
 
-    if(MEAN_FLAG == true){
+    if(MEAN_FLAG){
         double mean = get_mean(data_array, size);
         printf("%g\n", mean);
     }
 
-    if(LENGTH_FLAG == true){
+    if(LENGTH_FLAG){
         printf("\nLength: \5%d\n\n", size);
     }
 
-    if(FREQ_FLAG == true){
+    if(FREQ_FLAG){
         int breaks = FREQ_BREAKS;
         int *buckets;
         double *intervals;
@@ -185,7 +185,7 @@ int main(int argc, char **argv){
         }
     }
 
-    if(SUMMARY_FLAG == true){
+    if(SUMMARY_FLAG){
         double *quartile_call_result;
         double mean = get_mean(data_array, size);
         /* if the size is less than five, no meaningful
