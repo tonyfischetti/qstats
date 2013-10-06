@@ -20,6 +20,10 @@ void make_intervals(double themin, double themax,
     double length = themax - themin;
     double *retarray;
     retarray = (double *) malloc((breaks+1) * sizeof(double));
+    if(retarray == NULL){
+        fputs("Error allocating memory", stderr);
+        exit(EXIT_FAILURE);
+    }
     int retarrayindex = 0;
     double upto = themin;
     double thedivide = length/breaks-1;
@@ -44,6 +48,10 @@ void ret_buckets(int size, double *array, int breaks,
     *rinter = intervals;
     int *buckets;
     buckets = (int *) malloc(breaks * sizeof(int));
+    if(buckets == NULL){
+        fputs("Error allocating memory", stderr);
+        exit(EXIT_FAILURE);
+    }
     int j;
     for(j = 0; j < breaks; j++){
         buckets[j] = 0;

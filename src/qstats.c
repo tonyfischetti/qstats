@@ -192,7 +192,6 @@ int main(int argc, char **argv){
     }
 
     if(SUMMARY_FLAG == true){
-
         mean = get_mean(array, size);
         /* if the size is less than four, no meaningful
            summary can be made */
@@ -200,14 +199,12 @@ int main(int argc, char **argv){
             fputs("Input too small for meaningful summary\n", stderr);
             return EXIT_FAILURE;
         }
-
         the_min = array[0];
         the_max = array[size-1];
         result = get_quartiles(array, size);
         first_quartile = result[0];
         median = result[1];
         third_quartile = result[2];
-
         printf("\n");
         printf("Min.     %g\n", the_min);
         printf("1st Qu.  %g\n", first_quartile);
@@ -218,6 +215,5 @@ int main(int argc, char **argv){
     }
 
     return EXIT_SUCCESS;
-
 
 }

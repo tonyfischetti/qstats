@@ -4,7 +4,13 @@
 #define CHUNK 300
 
 int read_column(double** rarray){
-
+    /***************************************
+     * this is called by the main program  *
+     * with a pointer to the array where   *
+     * the data will be stored. It is safe *
+     * from overflows and it dynamically   *
+     * resizes.                            *
+     ***************************************/
     double current;
     char line[50];
     int index = 0;
@@ -26,9 +32,9 @@ int read_column(double** rarray){
         }
         barray[index] = current;
         index++;
-        // if we ran out of space
+        /* if we ran out of space */
         if(index == size){
-            // try to allocate more memory
+            /* try to allocate more memory */
             double *temp;
             size += CHUNK;
             temp = realloc(barray, size * sizeof(double));
@@ -37,13 +43,13 @@ int read_column(double** rarray){
                 fputs("Error allocating memory", stderr);
                 exit(EXIT_FAILURE);
             }
-            // re-allocation successful
+            /* reallocation successful */
             barray = temp;
         }
     }
     size = index;
 
-    // resize to not waste memory
+    /* resize to not waste memory */
     double *temp;
     temp = realloc(barray, size * sizeof(double));
     if(temp == NULL){

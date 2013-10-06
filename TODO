@@ -30,8 +30,6 @@ Be robust with respect to data type limits
 
 Rename variables and DOCUMENT
 
-Did I take out dynamic allocation success checks?
-
 Consider using forks more multiprocessing
 
 Fix usage
