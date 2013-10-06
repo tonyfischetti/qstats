@@ -5,7 +5,7 @@
 #include <math.h>
 
 
-void draw_bars(int *array, int size){
+void draw_bars(int *data_array, int size){
     /******************************************
      * draws a horizontal bar chart of the    *
      * frequencies of the data points in each *
@@ -26,12 +26,12 @@ void draw_bars(int *array, int size){
     int sum = 0;
     int i;
     for(i = 0; i < size; i++){
-        sum += array[i];
+        sum += data_array[i];
     }
     
     /* find percent of data points in each bucket */
     for(i = 0; i < size; i++){
-        int thenum = array[i];
+        int thenum = data_array[i];
         perc[i] = ((double)thenum/(double)sum) * 100;
     }
     

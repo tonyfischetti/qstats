@@ -13,7 +13,7 @@ const char *header_text =
     "Unix pipeline\n";
 
 const char *usage_text =
-    "\nusage: qstats [-amshl | -f breaks | -h breaks] < *stream*\n";
+    "\nusage: qstats [-amshl | -f breaks | -b breaks] < *stream*\n";
 
 
 int comp_func(const void * a, const void * b) {
@@ -42,8 +42,7 @@ int main(int argc, char **argv){
     static int FREQ_FLAG = false;
     static int FREQ_BREAKS;
     static int BARS_SPECIFIED = false;
-    double *array;
-    double *result;
+    double *data_array;
     int size;
     int c;
 
@@ -152,15 +151,15 @@ int main(int argc, char **argv){
     }
 
 
-    size = read_column(&array);
+    size = read_column(&data_array);
 
     /* only sort if needed */
     if((SUMMARY_FLAG + FREQ_FLAG) > 0){
-        qsort(array, size, sizeof(double), comp_func);
+        qsort(data_array, size, sizeof(double), comp_func);
     }
 
     if(MEAN_FLAG == true){
-        double mean = get_mean(array, size);
+        double mean = get_mean(data_array, size);
         printf("%g\n", mean);
     }
 
@@ -172,7 +171,7 @@ int main(int argc, char **argv){
         int breaks = FREQ_BREAKS;
         int *buckets;
         double *intervals;
-        deliver_frequencies(size, array, breaks, &buckets, &intervals);
+        deliver_frequencies(size, data_array, breaks, &buckets, &intervals);
         if(BARS_SPECIFIED == true){
             draw_bars(buckets, breaks);
         }
@@ -187,19 +186,20 @@ int main(int argc, char **argv){
     }
 
     if(SUMMARY_FLAG == true){
-        double mean = get_mean(array, size);
+        double *quartile_call_result;
+        double mean = get_mean(data_array, size);
         /* if the size is less than five, no meaningful
            summary can be made */
         if(size < 5){
             fputs("Input too small for meaningful summary\n", stderr);
             return EXIT_FAILURE;
         }
-        double the_min = array[0];
-        double the_max = array[size-1];
-        result = get_quartiles(array, size);
-        double first_quartile = result[0];
-        double median = result[1];
-        double third_quartile = result[2];
+        double the_min = data_array[0];
+        double the_max = data_array[size-1];
+        quartile_call_result = get_quartiles(data_array, size);
+        double first_quartile = quartile_call_result[0];
+        double median = quartile_call_result[1];
+        double third_quartile = quartile_call_result[2];
         printf("\n");
         printf("Min.     %g\n", the_min);
         printf("1st Qu.  %g\n", first_quartile);

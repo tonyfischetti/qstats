@@ -4,13 +4,13 @@
 #include <float.h>
 
 
-double get_mean(double *array, int size){
+double get_mean(double *data_array, int size){
     /* self-explanatory */
     double sum = 0;
     double mean;
     int i;
     for(i = 0; i < size; i++){
-        sum += array[i];
+        sum += data_array[i];
     }
     mean = sum/size;
     return(mean);
@@ -22,7 +22,8 @@ void make_intervals(double themin, double themax,
      * return an array with 'breaks'+1 equally spaced   *
      * numbers from min data point to max data point.   *
      * This will be used for the bucketed frequency     *
-     * counts function.                                 *
+     * counts function. See the "deliver_frequencies"   *
+     * function documentation for more information      *
      ****************************************************/
     double range = themax - themin;
     double *to_return_array;
@@ -46,13 +47,29 @@ void make_intervals(double themin, double themax,
 }
 
 
-void deliver_frequencies(int size, double *array, int breaks, 
-                          int** rarray, double** rinter){
+void deliver_frequencies(int size, double *data_array, int breaks, 
+                          int** delivery_frequencies, 
+                          double** delivery_intervals){
+    /***************************************************************
+     * This function returns an array of frequency counts for each *
+     * data point in 'breaks' number of intervals. It takes: the   *
+     * size of the data array, the data array by reference, the    *
+     * number of equally sized 'buckets' to create, a pointer to   *
+     * a pointer to store the frequency counts, and a pointer to   *
+     * a pointer to store the intervals that are used to come      *
+     * up with the frequency counts. The interval array will have  *
+     * one more element than the frequency array because the       *
+     * space between every value in the interval array and the     *
+     * subsequent one constitute a "bucket". As such, the first    *
+     * and last values of the interval array is the first and      *
+     * the last value of the data array (after it's been sorted,   *
+     * respectively.                                               *
+     ***************************************************************/
     double *intervals;
-    double themin = array[0];
-    double themax = array[size-1];
+    double themin = data_array[0];
+    double themax = data_array[size-1];
     make_intervals(themin, themax, breaks, &intervals);
-    *rinter = intervals;
+    *delivery_intervals = intervals;
     int *buckets;
     buckets = (int *) malloc(breaks * sizeof(int));
     if(buckets == NULL){
@@ -67,7 +84,7 @@ void deliver_frequencies(int size, double *array, int breaks,
     int the_bound = 1;
     int k;
     for(k = 0; k < size; k++){
-        double num = array[k];
+        double num = data_array[k];
         if(num < intervals[the_bound]){
             buckets[place_in_bucket]++;
         }
@@ -78,17 +95,17 @@ void deliver_frequencies(int size, double *array, int breaks,
         }
     }
     intervals[breaks]--;
-    *rarray = buckets;
+    *delivery_frequencies = buckets;
 }
 
 
-int get_uniques(double *array, int size, double** delivery_uniques){
+int get_uniques(double *data_array, int size, double** delivery_uniques){
     /*********************************************************
      * this function takes a sorted array by reference, it's *
      * size, and a pointer and the address where the new     *
      * array of only unique elements is to be stored         *
      *********************************************************/
-    double last_value = array[0];
+    double last_value = data_array[0];
     /* have to assume that the array of unique elements *
      * is the same size as the original                 */
     double *uniques;
@@ -98,11 +115,11 @@ int get_uniques(double *array, int size, double** delivery_uniques){
     int new_index = 1;
     uniques[0] = last_value;
     for(old_index=1; old_index < size; old_index++){
-        if(!(fabs(last_value - array[old_index]) <= .0001)){
-            uniques[new_index] = array[old_index];
+        if(!(fabs(last_value - data_array[old_index]) <= .0001)){
+            uniques[new_index] = data_array[old_index];
             new_index++;
             new_size++;
-            last_value = array[old_index];
+            last_value = data_array[old_index];
         }
     }
     /* resize array */
@@ -120,9 +137,9 @@ int get_uniques(double *array, int size, double** delivery_uniques){
 }
 
 
-double *get_quartiles(double *array, int size){
+double *get_quartiles(double *data_array, int size){
     /********************************************
-     * Takes a sorted array of doubles          *
+     * Takes a sorted data_array of doubles          *
      * and returns the first, second (median),  *
      * and third quartiles                      *
      ********************************************/
@@ -132,39 +149,39 @@ double *get_quartiles(double *array, int size){
     double third_quartile;
     if(size % 2 == 1){
         int imid = floor(size/2);
-        median = array[imid];
+        median = data_array[imid];
         if(imid % 2 == 1){
             int i1q = floor(imid/2);
             int i3q = imid + 1 + i1q;
-            first_quartile = array[i1q];
-            third_quartile = array[i3q];
+            first_quartile = data_array[i1q];
+            third_quartile = data_array[i3q];
         }
         else{
             int i1qb = imid/2 - 1;
             int i1qa = i1qb + 1;
             int i3qb = i1qb + 1 + imid;
             int i3qa = i3qb + 1;
-            first_quartile = ((array[i1qb] + array[i1qa]) / 2);
-            third_quartile = ((array[i3qb] + array[i3qa]) / 2);
+            first_quartile = ((data_array[i1qb] + data_array[i1qa]) / 2);
+            third_quartile = ((data_array[i3qb] + data_array[i3qa]) / 2);
         }
     }
     else{
         int imida = size/2;
         int imidb = imida-1;
-        median = ((array[imidb] + array[imida]) / 2);
+        median = ((data_array[imidb] + data_array[imida]) / 2);
         if(imida % 2 == 0){
             int i1qb = imida/2 - 1;
             int i1qa = i1qb + 1;
             int i3qb = i1qb + imida;
             int i3qa = i3qb + 1;
-            first_quartile = ((array[i1qb] + array[i1qa]) / 2);
-            third_quartile = ((array[i3qb] + array[i3qa]) / 2);
+            first_quartile = ((data_array[i1qb] + data_array[i1qa]) / 2);
+            third_quartile = ((data_array[i3qb] + data_array[i3qa]) / 2);
         }
         else{
             int i1q = imidb / 2;
             int i3q = i1q + imida;
-            first_quartile = array[i1q];
-            third_quartile = array[i3q];
+            first_quartile = data_array[i1q];
+            third_quartile = data_array[i3q];
         }
     }
     ret_ar[0] = first_quartile;
