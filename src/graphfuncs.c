@@ -12,16 +12,17 @@ void draw_bars(int *data_array, int size){
      * bucket. It takes the array of data     *
      * point counts in each bucket, and the   *
      * size of the array; calculates the      *
-     * percents and displayes it              *
+     * relative (rel_freqent) frequences and      *
+     * displays it                            *
      ******************************************/
     struct winsize w;
     ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
     int ncols = w.ws_col;
     /* wiggle room is the room to work with *
      * to draw the bars taking into account *
-     * the percent of points in the buckets */
+     * the rel_freqent of points in the buckets */
     int wiggle = ncols - 15;
-    double perc[size];
+    double rel_freq[size];
 
     int sum = 0;
     int i;
@@ -29,19 +30,19 @@ void draw_bars(int *data_array, int size){
         sum += data_array[i];
     }
     
-    /* find percent of data points in each bucket */
+    /* find rel_freqent of data points in each bucket */
     for(i = 0; i < size; i++){
         int thenum = data_array[i];
-        perc[i] = ((double)thenum/(double)sum) * 100;
+        rel_freq[i] = ((double)thenum/(double)sum) * 100;
     }
     
     /* find the max value to determine the *
      * factor to to multiply all values    *
      * with to scale all bars in chart     */
-    double themax = perc[0];
+    double themax = rel_freq[0];
     for(i = 0; i < size; i++){
-        if(perc[i] > themax){
-            themax = perc[i];
+        if(rel_freq[i] > themax){
+            themax = rel_freq[i];
         }
     }
 
@@ -49,8 +50,8 @@ void draw_bars(int *data_array, int size){
     factor = wiggle/themax;
     
     for(i = 0; i < size; i++){
-        int thenum = perc[i];
-        printf("%0.1f%%\t", perc[i]);
+        int thenum = rel_freq[i];
+        printf("%0.1f%%\t", rel_freq[i]);
         int m;
         for(m = 0; m < floor(factor*thenum); m++){
             printf("#");

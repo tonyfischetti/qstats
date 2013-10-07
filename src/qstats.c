@@ -9,7 +9,7 @@
 
 
 const char *header_text = 
-    "\nqstats v0.3.4 -- quick and dirty statistics tool for the "
+    "\nqstats v0.3.5 -- quick and dirty statistics tool for the "
     "Unix pipeline\n";
 
 const char *usage_text =
@@ -54,8 +54,8 @@ int main(int argc, char **argv){
             {"all", no_argument, 0, 'a'},
             {"mean",    no_argument, 0, 'm'},
             {"summary", no_argument, 0, 's'},
-            {"frequencies", required_argument, 0, 'f'},
-            {"bars", required_argument, 0, 'b'},
+            {"frequencies", optional_argument, 0, 'f'},
+            {"bars", optional_argument, 0, 'b'},
             {"help",    no_argument, 0, 'h'},
             {"length",  no_argument, 0, 'l'},
             {0, 0, 0, 0}
@@ -63,7 +63,7 @@ int main(int argc, char **argv){
 
         int option_index = 0;
 
-        c = getopt_long(argc, argv, "asmhlf:b:", 
+        c = getopt_long(argc, argv, "asmhlf::b::", 
                         long_options, &option_index);
 
         if(c == -1)
@@ -92,23 +92,33 @@ int main(int argc, char **argv){
                 break;
             case 'f':
                 FREQ_SPECIFIED = true;
-                char *res;
-                FREQ_BREAKS = strtol(optarg, &res, 10);
-                if(*res){
-                    fputs("Can't parse frequency breaks, expects integer\n",
-                          stderr);
-                    exit(EXIT_FAILURE);
+                if(optarg == NULL){
+                    FREQ_BREAKS = 0;
+                }
+                else{
+                    char *res;
+                    FREQ_BREAKS = strtol(optarg, &res, 10);
+                    if(*res){
+                        fputs("Can't parse frequency breaks, expects integer\n",
+                              stderr);
+                        exit(EXIT_FAILURE);
+                    }
                 }
                 break;
             case 'b':
                 FREQ_SPECIFIED = true;
                 BARS_SPECIFIED = true;
-                char *res2;
-                FREQ_BREAKS = strtol(optarg, &res2, 10);
-                if(*res2){
-                    fputs("Can't parse barchart breaks, expects integer\n",
-                          stderr);
-                    exit(EXIT_FAILURE);
+                if(optarg == NULL){
+                    FREQ_BREAKS = 0;
+                }
+                else{
+                    char *res2;
+                    FREQ_BREAKS = strtol(optarg, &res2, 10);
+                    if(*res2){
+                        fputs("Can't parse barchart breaks, expects integer\n",
+                              stderr);
+                        exit(EXIT_FAILURE);
+                    }
                 }
                 break;
             case 'h':
@@ -168,7 +178,14 @@ int main(int argc, char **argv){
     }
 
     if(FREQ_FLAG){
-        int breaks = FREQ_BREAKS;
+        int breaks;
+        /* if break number not specified, use struge's rule */
+        if(FREQ_BREAKS){
+            breaks = FREQ_BREAKS;
+        }
+        else{
+            breaks = ceil(log(size)) + 1;
+        }
         int *buckets;
         double *intervals;
         deliver_frequencies(size, data_array, breaks, &buckets, &intervals);

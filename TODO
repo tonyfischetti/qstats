@@ -10,7 +10,7 @@ write man file
 
 add author and license info the the source files
 
-Have frequency and barchart attempt to guess breaks without arg (sturge's)
+fix tab spacing (especially with the frequency output)
 
 More robust to memory limitations: look into temporary storage files
 
@@ -26,3 +26,4 @@ Be robust with respect to data type limits
 
 Consider using forks more multiprocessing
 
+Try to make 100% ANSI compliant and no errors on "pedantic"
