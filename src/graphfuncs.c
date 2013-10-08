@@ -12,7 +12,7 @@ void draw_bars(int *data_array, int size){
      * bucket. It takes the array of data     *
      * point counts in each bucket, and the   *
      * size of the array; calculates the      *
-     * relative (rel_freqent) frequences and      *
+     * relative (rel_freqent) frequences and  *
      * displays it                            *
      ******************************************/
     struct winsize w;

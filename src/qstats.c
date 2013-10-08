@@ -13,7 +13,7 @@ const char *header_text =
     "Unix pipeline\n";
 
 const char *usage_text =
-    "\nusage: qstats [-amshl | -f breaks | -b breaks] < *stream*\n";
+    "\nusage: qstats [-mshl | -f<breaks> | -b<breaks>] < *stream*\n";
 
 
 int comp_func(const void * a, const void * b) {
@@ -31,17 +31,18 @@ int comp_func(const void * a, const void * b) {
 
 int main(int argc, char **argv){
 
+    static int FROM_FILE = false;
     static int MEAN_FLAG = false;
     static int SUMMARY_FLAG = false;
     static int MEAN_SPECIFIED = false;
     static int SUMMARY_SPECIFIED = false;
-    static int ALL_SPECIFIED = false;
     static int LENGTH_SPECIFIED = false;
     static int LENGTH_FLAG = false;
     static int FREQ_SPECIFIED = false;
     static int FREQ_FLAG = false;
     static int FREQ_BREAKS;
     static int BARS_SPECIFIED = false;
+    char *filename;
     double *data_array;
     int size;
     int c;
@@ -51,7 +52,6 @@ int main(int argc, char **argv){
     while(true){
         static struct option long_options[] = 
         {
-            {"all", no_argument, 0, 'a'},
             {"mean",    no_argument, 0, 'm'},
             {"summary", no_argument, 0, 's'},
             {"frequencies", optional_argument, 0, 'f'},
@@ -63,7 +63,7 @@ int main(int argc, char **argv){
 
         int option_index = 0;
 
-        c = getopt_long(argc, argv, "asmhlf::b::", 
+        c = getopt_long(argc, argv, "smhlf::b::", 
                         long_options, &option_index);
 
         if(c == -1)
@@ -77,9 +77,6 @@ int main(int argc, char **argv){
                 if (optarg)
                     printf (" with arg %s", optarg);
                 printf ("\n");
-                break;
-            case 'a':
-                ALL_SPECIFIED = true;
                 break;
             case 'm':
                 MEAN_SPECIFIED = true;
@@ -133,19 +130,18 @@ int main(int argc, char **argv){
             default:
                 abort();
         }
+        if(optind < argc){
+            FROM_FILE = true;
+            puts("from file!");
+            filename = argv[optind];
+            printf("%s\n", filename);
+        }
     }
 
-    if(ALL_SPECIFIED){
-        SUMMARY_SPECIFIED = true;
-        LENGTH_SPECIFIED = true;
-        FREQ_SPECIFIED = true;
-        MEAN_SPECIFIED = true;
-    }
     if(MEAN_SPECIFIED){
         MEAN_FLAG = true;
     }
     if(SUMMARY_SPECIFIED){
-        MEAN_FLAG = false;
         SUMMARY_FLAG = true;
     } 
     if(LENGTH_SPECIFIED){
