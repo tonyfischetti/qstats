@@ -33,6 +33,7 @@
 #include "statfuncs.h"
 #include "infuncs.h"
 #include "graphfuncs.h"
+#include "qstats.h"
 
 
 const char *header_text = 
@@ -43,17 +44,12 @@ const char *usage_text =
     "\nusage: qstats [-mshl | -f<breaks> | -b<breaks>] file\n";
 
 
-static int FROM_FILE = false;
-static int MEAN_FLAG = false;
-static int SUMMARY_FLAG = false;
 static int MEAN_SPECIFIED = false;
 static int SUMMARY_SPECIFIED = false;
 static int LENGTH_SPECIFIED = false;
-static int LENGTH_FLAG = false;
 static int FREQ_SPECIFIED = false;
-static int FREQ_FLAG = false;
-static int FREQ_BREAKS;
 static int BARS_SPECIFIED = false;
+static int FREQ_BREAKS;
 
 
 int comp_func(const void * a, const void * b) {
@@ -70,6 +66,21 @@ int comp_func(const void * a, const void * b) {
 
 
 int process_call(FILE* input){
+    /**********************************************
+     * this function accepts a FILE pointer from  *
+     * main() and, depending on whether it is     *
+     * null or not, reads the data from either a  *
+     * file, or stdin. It then uses the flags     *
+     * given on the command-line to determine     *
+     * which computations will be run on the      *
+     * data. Finally, the appropriate output is   *
+     * printed.                                   *
+     **********************************************/ 
+    static int MEAN_FLAG = false;
+    static int SUMMARY_FLAG = false;
+    static int LENGTH_FLAG = false;
+    static int FREQ_FLAG = false;
+
     double *data_array;
     int size;
 
@@ -270,7 +281,9 @@ int main(int argc, char **argv){
 
     /* check if filenames are specified */
     if(optind < argc){
-        FROM_FILE = true;
+        /* if so for each filename specified, 
+         * send to handler "process_call()
+         * that does all the work */
         if(optind+1 < argc){
             MULTIPLE_FILES = true;
         }

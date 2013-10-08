@@ -1,3 +1,6 @@
+flesh out header files, try to move as much into
+the header files as possible
+
 Fix errors in Makefile
 
 Create more flags (like for stddev) and exclusionary logic

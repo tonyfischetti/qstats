@@ -2,7 +2,7 @@
 
 CC=gcc
 CFLAGS=-Wall -O2 -I../include
-DEPS = statfuncs.h infuncs.h graphfuncs.h
+DEPS = statfuncs.h infuncs.h graphfuncs.h qstats.h
 
 all: qstats
 
