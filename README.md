@@ -15,10 +15,10 @@ include in a Unix shell pipeline to help me and any other data analysts out!
 
 ### Example usage
 
-All of these tools read one column of data (separated by newline). A simple
+This tool reads one column of data (separated by newline). A simple
 usage of to compute mean would be:
 
-    echo -e "5\n1\3" | qstats -m
+    echo -e "5\n1\n3" | qstats -m
 
 A more realistic example would be to subset a CSV by a condition, extract
 one column (with awk), remove the header and grab summary statistics:
@@ -32,6 +32,12 @@ substitute commas for newlines and pipe it to the program:
     cat afile | tr , '\n' | qstats
 
 (I like to use unecessary "cat"s)
+
+
+You can also call this tool with filenames as arguments, but it's utility
+that way is limited because, for the time being, it can only read input
+that is one column long of just numerics--and very few files are one
+column long in nature.
 
 
 ### Installation
