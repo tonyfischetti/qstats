@@ -1,9 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #define CHUNK 300
 
-int read_column(double** delivery_array){
+
+int read_column(double** delivery_array, FILE *input){
     /***************************************
      * this is called by the main program  *
      * with a pointer to the array where   *
@@ -17,13 +19,20 @@ int read_column(double** delivery_array){
     int size = 50;
     double *build_array;
 
+    if(!input){
+        input = stdin;
+    }
+
     build_array = (double *) malloc(size * sizeof(double));
     if(build_array == NULL){
         fputs("Error allocating memory", stderr);
         exit(EXIT_FAILURE);
     }
 
-    while(fgets(line, sizeof(line), stdin) != NULL){
+    while(fgets(line, sizeof(line), input) != NULL){
+        if(!strcmp(line, "\n")){
+            continue;
+        }
         int ret_val;
         ret_val = sscanf(line, "%lf", &current);
         if(ret_val == 0){

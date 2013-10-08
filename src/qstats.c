@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <getopt.h>
+#include <errno.h>
+#include <string.h>
 #include <math.h>
 #include <stdbool.h>
 #include "statfuncs.h"
@@ -9,11 +11,24 @@
 
 
 const char *header_text = 
-    "\nqstats v0.3.6 -- quick and dirty statistics tool for the "
+    "\nqstats v0.4.0 -- quick and dirty statistics tool for the "
     "Unix pipeline\n";
 
 const char *usage_text =
-    "\nusage: qstats [-mshl | -f<breaks> | -b<breaks>] < *stream*\n";
+    "\nusage: qstats [-mshl | -f<breaks> | -b<breaks>] file\n";
+
+
+static int FROM_FILE = false;
+static int MEAN_FLAG = false;
+static int SUMMARY_FLAG = false;
+static int MEAN_SPECIFIED = false;
+static int SUMMARY_SPECIFIED = false;
+static int LENGTH_SPECIFIED = false;
+static int LENGTH_FLAG = false;
+static int FREQ_SPECIFIED = false;
+static int FREQ_FLAG = false;
+static int FREQ_BREAKS;
+static int BARS_SPECIFIED = false;
 
 
 int comp_func(const void * a, const void * b) {
@@ -29,24 +44,120 @@ int comp_func(const void * a, const void * b) {
 }
 
 
-int main(int argc, char **argv){
-
-    static int FROM_FILE = false;
-    static int MEAN_FLAG = false;
-    static int SUMMARY_FLAG = false;
-    static int MEAN_SPECIFIED = false;
-    static int SUMMARY_SPECIFIED = false;
-    static int LENGTH_SPECIFIED = false;
-    static int LENGTH_FLAG = false;
-    static int FREQ_SPECIFIED = false;
-    static int FREQ_FLAG = false;
-    static int FREQ_BREAKS;
-    static int BARS_SPECIFIED = false;
-    char *filename;
+int process_call(FILE* input){
     double *data_array;
     int size;
-    int c;
 
+    size = read_column(&data_array, input);
+
+    if(MEAN_SPECIFIED){
+        MEAN_FLAG = true;
+    }
+    if(SUMMARY_SPECIFIED){
+        SUMMARY_FLAG = true;
+    } 
+    if(LENGTH_SPECIFIED){
+        LENGTH_FLAG = true;
+    }
+    if(FREQ_SPECIFIED){
+        FREQ_FLAG = true;
+    }
+    if((FREQ_SPECIFIED + LENGTH_SPECIFIED + 
+        SUMMARY_SPECIFIED + MEAN_SPECIFIED) == 0){
+        /* summary is default */
+        SUMMARY_FLAG = true;
+    }
+
+    /* only sort if needed */
+    if((SUMMARY_FLAG + FREQ_FLAG) > 0){
+        qsort(data_array, size, sizeof(double), comp_func);
+    }
+
+    if(MEAN_FLAG){
+        double mean = get_mean(data_array, size);
+        printf("%g\n", mean);
+    }
+
+    if(LENGTH_FLAG){
+        printf("%d\n", size);
+    }
+
+    if(FREQ_FLAG){
+        int breaks;
+        /* if break number not specified, use sturge's rule */
+        if(FREQ_BREAKS){
+            breaks = FREQ_BREAKS;
+        }
+        else{
+            breaks = ceil(log(size)) + 1;
+        }
+        int *buckets;
+        double *intervals;
+        deliver_frequencies(size, data_array, breaks, &buckets, &intervals);
+        if(BARS_SPECIFIED == true){
+            draw_bars(buckets, breaks);
+        }
+        else{
+            /* first we have to find the max length string
+             * in order to format properly */
+            int m;
+            int max_len = 0;
+            for(m = 0; m < breaks; m++){
+                int len;
+                char line[30];
+                len = sprintf(line, "[%.01f - %.01f):", intervals[m], 
+                                                        intervals[m+1]);
+                if(len > max_len){
+                    max_len = len;
+                }
+            } 
+            int n;
+            for(n = 0; n < breaks; n++){
+                int n2;
+                char line[30];
+                n2 = sprintf(line, "[%.01f - %.01f):", intervals[n], 
+                                                       intervals[n+1]);
+                printf("%*s %d\n", max_len, line, buckets[n]);
+            }
+        }
+    }
+
+    if(SUMMARY_FLAG){
+        double *quartile_call_result;
+        double mean = get_mean(data_array, size);
+        /* if the size is less than five, no meaningful
+           summary can be made */
+        if(size < 5){
+            fputs("Input too small for meaningful summary\n", stderr);
+            exit(EXIT_FAILURE);
+        }
+        double the_min = data_array[0];
+        double the_max = data_array[size-1];
+        quartile_call_result = get_quartiles(data_array, size);
+        double first_quartile = quartile_call_result[0];
+        double median = quartile_call_result[1];
+        double third_quartile = quartile_call_result[2];
+        double stddev = get_standard_deviation(data_array, mean, size);
+        printf("Min.     %g\n", the_min);
+        printf("1st Qu.  %g\n", first_quartile);
+        printf("Median   %g\n", median);
+        printf("Mean     %g\n", mean);
+        printf("3rd Qu.  %g\n", third_quartile);
+        printf("Max.     %g\n", the_max);
+        printf("Range    %g\n", (the_max - the_min));
+        printf("Std Dev. %g\n", stddev);
+        printf("Length   %d\n", size);
+    }
+
+    return EXIT_SUCCESS;
+}
+
+
+int main(int argc, char **argv){
+    char *filename;
+    FILE *input;
+    int c;
+    static int MULTIPLE_FILES = false;
    
     /* process command-line arguments */ 
     while(true){
@@ -130,116 +241,35 @@ int main(int argc, char **argv){
             default:
                 abort();
         }
-        if(optind < argc){
-            FROM_FILE = true;
-            puts("from file!");
+    }
+
+    /* check if filenames are specified */
+    if(optind < argc){
+        FROM_FILE = true;
+        if(optind+1 < argc){
+            MULTIPLE_FILES = true;
+        }
+        do{ 
             filename = argv[optind];
-            printf("%s\n", filename);
-        }
-    }
-
-    if(MEAN_SPECIFIED){
-        MEAN_FLAG = true;
-    }
-    if(SUMMARY_SPECIFIED){
-        SUMMARY_FLAG = true;
-    } 
-    if(LENGTH_SPECIFIED){
-        LENGTH_FLAG = true;
-    }
-    if(FREQ_SPECIFIED){
-        FREQ_FLAG = true;
-    }
-    if((FREQ_SPECIFIED + LENGTH_SPECIFIED + 
-        SUMMARY_SPECIFIED + MEAN_SPECIFIED) == 0){
-        /* summary is default */
-        SUMMARY_FLAG = true;
-    }
-
-
-    size = read_column(&data_array);
-
-    /* only sort if needed */
-    if((SUMMARY_FLAG + FREQ_FLAG) > 0){
-        qsort(data_array, size, sizeof(double), comp_func);
-    }
-
-    if(MEAN_FLAG){
-        double mean = get_mean(data_array, size);
-        printf("%g\n", mean);
-    }
-
-    if(LENGTH_FLAG){
-        printf("%d\n", size);
-    }
-
-    if(FREQ_FLAG){
-        int breaks;
-        /* if break number not specified, use struge's rule */
-        if(FREQ_BREAKS){
-            breaks = FREQ_BREAKS;
-        }
-        else{
-            breaks = ceil(log(size)) + 1;
-        }
-        int *buckets;
-        double *intervals;
-        deliver_frequencies(size, data_array, breaks, &buckets, &intervals);
-        if(BARS_SPECIFIED == true){
-            draw_bars(buckets, breaks);
-        }
-        else{
-            /* first we have to find the max length string
-             * in order to format properly */
-            int m;
-            int max_len = 0;
-            for(m = 0; m < breaks; m++){
-                int len;
-                char line[30];
-                len = sprintf(line, "[%.01f - %.01f):", intervals[m], 
-                                                        intervals[m+1]);
-                if(len > max_len){
-                    max_len = len;
-                }
-            } 
-            int n;
-            for(n = 0; n < breaks; n++){
-                int n2;
-                char line[30];
-                n2 = sprintf(line, "[%.01f - %.01f):", intervals[n], 
-                                                       intervals[n+1]);
-                printf("%*s %d\n", max_len, line, buckets[n]);
+            input = fopen(filename, "r");
+            if (NULL == input) {
+                fprintf(stderr, "Unable to open '%s': %s\n",
+                                 filename, strerror(errno));
+                exit(EXIT_FAILURE);
             }
-        }
+            if(MULTIPLE_FILES){
+                printf("%s\n", filename);
+            }
+            process_call(input);
+            if(MULTIPLE_FILES && optind+1 != argc){
+                printf("\n");
+            }
+        } while (++optind < argc);
+        return EXIT_SUCCESS;
     }
 
-    if(SUMMARY_FLAG){
-        double *quartile_call_result;
-        double mean = get_mean(data_array, size);
-        /* if the size is less than five, no meaningful
-           summary can be made */
-        if(size < 5){
-            fputs("Input too small for meaningful summary\n", stderr);
-            return EXIT_FAILURE;
-        }
-        double the_min = data_array[0];
-        double the_max = data_array[size-1];
-        quartile_call_result = get_quartiles(data_array, size);
-        double first_quartile = quartile_call_result[0];
-        double median = quartile_call_result[1];
-        double third_quartile = quartile_call_result[2];
-        double stddev = get_standard_deviation(data_array, mean, size);
-        printf("Min.     %g\n", the_min);
-        printf("1st Qu.  %g\n", first_quartile);
-        printf("Median   %g\n", median);
-        printf("Mean     %g\n", mean);
-        printf("3rd Qu.  %g\n", third_quartile);
-        printf("Max.     %g\n", the_max);
-        printf("Range    %g\n", (the_max - the_min));
-        printf("Std Dev. %g\n", stddev);
-        printf("Length   %d\n", size);
-    }
-
+    /* if not, read once from stdin */
+    process_call(NULL);
     return EXIT_SUCCESS;
 
 }
