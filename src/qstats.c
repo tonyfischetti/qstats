@@ -37,19 +37,11 @@
 
 
 const char *header_text = 
-    "\nqstats v0.4.0 -- quick and dirty statistics tool for the "
+    "\nqstats v0.4.2 -- quick and dirty statistics tool for the "
     "Unix pipeline\n";
 
 const char *usage_text =
     "\nusage: qstats [-mshl | -f<breaks> | -b<breaks>] file\n";
-
-
-static int MEAN_SPECIFIED = false;
-static int SUMMARY_SPECIFIED = false;
-static int LENGTH_SPECIFIED = false;
-static int FREQ_SPECIFIED = false;
-static int BARS_SPECIFIED = false;
-static int FREQ_BREAKS;
 
 
 int comp_func(const void * a, const void * b) {
@@ -65,7 +57,7 @@ int comp_func(const void * a, const void * b) {
 }
 
 
-int process_call(FILE* input){
+int process_call(FILE* input, Cliopts cliopts){
     /**********************************************
      * this function accepts a FILE pointer from  *
      * main() and, depending on whether it is     *
@@ -73,8 +65,10 @@ int process_call(FILE* input){
      * file, or stdin. It then uses the flags     *
      * given on the command-line to determine     *
      * which computations will be run on the      *
-     * data. Finally, the appropriate output is   *
-     * printed.                                   *
+     * data. (The options from the command line   *
+     * are stored in the struct that this         *
+     * function takes as parameters.) Finally,    *
+     * the appropriate output is printed.         *
      **********************************************/ 
     static int MEAN_FLAG = false;
     static int SUMMARY_FLAG = false;
@@ -86,20 +80,22 @@ int process_call(FILE* input){
 
     size = read_column(&data_array, input);
 
-    if(MEAN_SPECIFIED){
+    /* have this here in order to implement
+     * exclusionary logic, if need be       */
+    if(cliopts.MEAN_SPECIFIED){
         MEAN_FLAG = true;
     }
-    if(SUMMARY_SPECIFIED){
+    if(cliopts.SUMMARY_SPECIFIED){
         SUMMARY_FLAG = true;
     } 
-    if(LENGTH_SPECIFIED){
+    if(cliopts.LENGTH_SPECIFIED){
         LENGTH_FLAG = true;
     }
-    if(FREQ_SPECIFIED){
+    if(cliopts.FREQ_SPECIFIED){
         FREQ_FLAG = true;
     }
-    if((FREQ_SPECIFIED + LENGTH_SPECIFIED + 
-        SUMMARY_SPECIFIED + MEAN_SPECIFIED) == 0){
+    if((cliopts.FREQ_SPECIFIED + cliopts.LENGTH_SPECIFIED + 
+        cliopts.SUMMARY_SPECIFIED + cliopts.MEAN_SPECIFIED) == 0){
         /* summary is default */
         SUMMARY_FLAG = true;
     }
@@ -121,8 +117,8 @@ int process_call(FILE* input){
     if(FREQ_FLAG){
         int breaks;
         /* if break number not specified, use sturge's rule */
-        if(FREQ_BREAKS){
-            breaks = FREQ_BREAKS;
+        if(cliopts.FREQ_BREAKS){
+            breaks = cliopts.FREQ_BREAKS;
         }
         else{
             breaks = ceil(log(size)) + 1;
@@ -130,7 +126,7 @@ int process_call(FILE* input){
         int *buckets;
         double *intervals;
         deliver_frequencies(size, data_array, breaks, &buckets, &intervals);
-        if(BARS_SPECIFIED == true){
+        if(cliopts.BARS_SPECIFIED == true){
             draw_bars(buckets, breaks);
         }
         else{
@@ -195,6 +191,14 @@ int main(int argc, char **argv){
     int c;
     static int MULTIPLE_FILES = false;
    
+    /* initialize the options holder struct */
+    Cliopts cliopts;
+    cliopts.MEAN_SPECIFIED = false;
+    cliopts.SUMMARY_SPECIFIED = false;
+    cliopts.LENGTH_SPECIFIED = false;
+    cliopts.FREQ_SPECIFIED = false;
+    cliopts.BARS_SPECIFIED = false;
+
     /* process command-line arguments */ 
     while(true){
         static struct option long_options[] = 
@@ -226,22 +230,22 @@ int main(int argc, char **argv){
                 printf ("\n");
                 break;
             case 'm':
-                MEAN_SPECIFIED = true;
+                cliopts.MEAN_SPECIFIED = true;
                 break;
             case 's':
-                SUMMARY_SPECIFIED = true;
+                cliopts.SUMMARY_SPECIFIED = true;
                 break;
             case 'l':
-                LENGTH_SPECIFIED = true;
+                cliopts.LENGTH_SPECIFIED = true;
                 break;
             case 'f':
-                FREQ_SPECIFIED = true;
+                cliopts.FREQ_SPECIFIED = true;
                 if(optarg == NULL){
-                    FREQ_BREAKS = 0;
+                    cliopts.FREQ_BREAKS = 0;
                 }
                 else{
                     char *res;
-                    FREQ_BREAKS = strtol(optarg, &res, 10);
+                    cliopts.FREQ_BREAKS = strtol(optarg, &res, 10);
                     if(*res){
                         fputs("Can't parse breaks, expects integer\n",
                               stderr);
@@ -250,14 +254,14 @@ int main(int argc, char **argv){
                 }
                 break;
             case 'b':
-                FREQ_SPECIFIED = true;
-                BARS_SPECIFIED = true;
+                cliopts.FREQ_SPECIFIED = true;
+                cliopts.BARS_SPECIFIED = true;
                 if(optarg == NULL){
-                    FREQ_BREAKS = 0;
+                    cliopts.FREQ_BREAKS = 0;
                 }
                 else{
                     char *res2;
-                    FREQ_BREAKS = strtol(optarg, &res2, 10);
+                    cliopts.FREQ_BREAKS = strtol(optarg, &res2, 10);
                     if(*res2){
                         fputs("Can't barchart breaks, expects integer\n",
                               stderr);
@@ -298,7 +302,7 @@ int main(int argc, char **argv){
             if(MULTIPLE_FILES){
                 printf("%s\n", filename);
             }
-            process_call(input);
+            process_call(input, cliopts);
             if(MULTIPLE_FILES && optind+1 != argc){
                 printf("\n");
             }
@@ -307,7 +311,7 @@ int main(int argc, char **argv){
     }
 
     /* if not, read once from stdin */
-    process_call(NULL);
+    process_call(NULL, cliopts);
     return EXIT_SUCCESS;
 
 }

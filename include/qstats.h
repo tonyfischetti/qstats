@@ -22,6 +22,11 @@
  * 
  */
 
-typedef struct cliopts{
-    int something;
-} cliopts;
+typedef struct Cliopts{
+    int MEAN_SPECIFIED;
+    int SUMMARY_SPECIFIED;
+    int LENGTH_SPECIFIED;
+    int FREQ_SPECIFIED;
+    int BARS_SPECIFIED;
+    int FREQ_BREAKS;
+} Cliopts;
