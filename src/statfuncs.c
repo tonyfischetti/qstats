@@ -27,8 +27,6 @@ double get_standard_deviation(double *data_array, double mean, int size){
     }
     mean_sum_of_squares = sum_of_squares / size;
     stddev = sqrt(mean_sum_of_squares); 
-    printf("sum of squares: %g\n", sum_of_squares);
-    printf("mean ss: %g\n", mean_sum_of_squares);
     return(stddev);
 }
 

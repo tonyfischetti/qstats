@@ -1,3 +1,5 @@
+Fix errors in Makefile
+
 Create more flags (like for stddev) and exclusionary logic
 
 use math.h floating point capabilities
@@ -9,8 +11,6 @@ add more stats
 write man file
 
 add author and license info the the source files
-
-fix tab spacing (especially with the frequency output)
 
 More robust to memory limitations: look into temporary storage files
 

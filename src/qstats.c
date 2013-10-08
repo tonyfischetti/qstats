@@ -9,7 +9,7 @@
 
 
 const char *header_text = 
-    "\nqstats v0.3.5 -- quick and dirty statistics tool for the "
+    "\nqstats v0.3.6 -- quick and dirty statistics tool for the "
     "Unix pipeline\n";
 
 const char *usage_text =
@@ -193,11 +193,26 @@ int main(int argc, char **argv){
             draw_bars(buckets, breaks);
         }
         else{
+            /* first we have to find the max length string
+             * in order to format properly */
+            int m;
+            int max_len = 0;
+            for(m = 0; m < breaks; m++){
+                int len;
+                char line[30];
+                len = sprintf(line, "[%.01f - %.01f):", intervals[m], 
+                                                        intervals[m+1]);
+                if(len > max_len){
+                    max_len = len;
+                }
+            } 
             int n;
             for(n = 0; n < breaks; n++){
-                printf("[%.01f - %0.1f):\t\t%d\n", intervals[n], 
-                                                   intervals[n+1],
-                                                   buckets[n]);
+                int n2;
+                char line[30];
+                n2 = sprintf(line, "[%.01f - %.01f):", intervals[n], 
+                                                       intervals[n+1]);
+                printf("%*s %d\n", max_len, line, buckets[n]);
             }
         }
     }
