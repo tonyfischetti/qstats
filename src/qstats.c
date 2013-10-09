@@ -29,7 +29,6 @@
 #include <errno.h>
 #include <string.h>
 #include <math.h>
-#include <stdbool.h>
 #include "statfuncs.h"
 #include "infuncs.h"
 #include "graphfuncs.h"
@@ -70,10 +69,10 @@ int process_call(FILE* input, Cliopts cliopts){
      * function takes as parameters.) Finally,    *
      * the appropriate output is printed.         *
      **********************************************/ 
-    static int MEAN_FLAG = false;
-    static int SUMMARY_FLAG = false;
-    static int LENGTH_FLAG = false;
-    static int FREQ_FLAG = false;
+    static int MEAN_FLAG = 0;
+    static int SUMMARY_FLAG = 0;
+    static int LENGTH_FLAG = 0;
+    static int FREQ_FLAG = 0;
 
     double *data_array;
     int size;
@@ -83,21 +82,21 @@ int process_call(FILE* input, Cliopts cliopts){
     /* have this here in order to implement
      * exclusionary logic, if need be       */
     if(cliopts.MEAN_SPECIFIED){
-        MEAN_FLAG = true;
+        MEAN_FLAG = 1;
     }
     if(cliopts.SUMMARY_SPECIFIED){
-        SUMMARY_FLAG = true;
+        SUMMARY_FLAG = 1;
     } 
     if(cliopts.LENGTH_SPECIFIED){
-        LENGTH_FLAG = true;
+        LENGTH_FLAG = 1;
     }
     if(cliopts.FREQ_SPECIFIED){
-        FREQ_FLAG = true;
+        FREQ_FLAG = 1;
     }
     if((cliopts.FREQ_SPECIFIED + cliopts.LENGTH_SPECIFIED + 
         cliopts.SUMMARY_SPECIFIED + cliopts.MEAN_SPECIFIED) == 0){
         /* summary is default */
-        SUMMARY_FLAG = true;
+        SUMMARY_FLAG = 1;
     }
 
     /* only sort if needed */
@@ -116,6 +115,8 @@ int process_call(FILE* input, Cliopts cliopts){
 
     if(FREQ_FLAG){
         int breaks;
+        int *buckets;
+        double *intervals;
         /* if break number not specified, use sturge's rule */
         if(cliopts.FREQ_BREAKS){
             breaks = cliopts.FREQ_BREAKS;
@@ -123,16 +124,15 @@ int process_call(FILE* input, Cliopts cliopts){
         else{
             breaks = ceil(log(size)) + 1;
         }
-        int *buckets;
-        double *intervals;
         deliver_frequencies(size, data_array, breaks, &buckets, &intervals);
-        if(cliopts.BARS_SPECIFIED == true){
+        if(cliopts.BARS_SPECIFIED == 1){
             draw_bars(buckets, breaks);
         }
         else{
             /* first we have to find the max length string
              * in order to format properly */
             int m;
+            int n;
             int max_len = 0;
             for(m = 0; m < breaks; m++){
                 int len;
@@ -143,7 +143,6 @@ int process_call(FILE* input, Cliopts cliopts){
                     max_len = len;
                 }
             } 
-            int n;
             for(n = 0; n < breaks; n++){
                 int n2;
                 char line[30];
@@ -157,19 +156,22 @@ int process_call(FILE* input, Cliopts cliopts){
     if(SUMMARY_FLAG){
         double *quartile_call_result;
         double mean = get_mean(data_array, size);
+        double the_min = data_array[0];
+        double the_max = data_array[size-1];
+        double stddev = get_standard_deviation(data_array, mean, size);
+        double first_quartile;
+        double median;
+        double third_quartile;
         /* if the size is less than five, no meaningful
            summary can be made */
         if(size < 5){
             fputs("Input too small for meaningful summary\n", stderr);
             exit(EXIT_FAILURE);
         }
-        double the_min = data_array[0];
-        double the_max = data_array[size-1];
         quartile_call_result = get_quartiles(data_array, size);
-        double first_quartile = quartile_call_result[0];
-        double median = quartile_call_result[1];
-        double third_quartile = quartile_call_result[2];
-        double stddev = get_standard_deviation(data_array, mean, size);
+        first_quartile = quartile_call_result[0];
+        median = quartile_call_result[1];
+        third_quartile = quartile_call_result[2];
         printf("Min.     %g\n", the_min);
         printf("1st Qu.  %g\n", first_quartile);
         printf("Median   %g\n", median);
@@ -189,18 +191,18 @@ int main(int argc, char **argv){
     char *filename;
     FILE *input;
     int c;
-    static int MULTIPLE_FILES = false;
+    static int MULTIPLE_FILES = 0;
    
     /* initialize the options holder struct */
     Cliopts cliopts;
-    cliopts.MEAN_SPECIFIED = false;
-    cliopts.SUMMARY_SPECIFIED = false;
-    cliopts.LENGTH_SPECIFIED = false;
-    cliopts.FREQ_SPECIFIED = false;
-    cliopts.BARS_SPECIFIED = false;
+    cliopts.MEAN_SPECIFIED = 0;
+    cliopts.SUMMARY_SPECIFIED = 0;
+    cliopts.LENGTH_SPECIFIED = 0;
+    cliopts.FREQ_SPECIFIED = 0;
+    cliopts.BARS_SPECIFIED = 0;
 
     /* process command-line arguments */ 
-    while(true){
+    while(1){
         static struct option long_options[] = 
         {
             {"mean",    no_argument, 0, 'm'},
@@ -230,16 +232,16 @@ int main(int argc, char **argv){
                 printf ("\n");
                 break;
             case 'm':
-                cliopts.MEAN_SPECIFIED = true;
+                cliopts.MEAN_SPECIFIED = 1;
                 break;
             case 's':
-                cliopts.SUMMARY_SPECIFIED = true;
+                cliopts.SUMMARY_SPECIFIED = 1;
                 break;
             case 'l':
-                cliopts.LENGTH_SPECIFIED = true;
+                cliopts.LENGTH_SPECIFIED = 1;
                 break;
             case 'f':
-                cliopts.FREQ_SPECIFIED = true;
+                cliopts.FREQ_SPECIFIED = 1;
                 if(optarg == NULL){
                     cliopts.FREQ_BREAKS = 0;
                 }
@@ -254,8 +256,8 @@ int main(int argc, char **argv){
                 }
                 break;
             case 'b':
-                cliopts.FREQ_SPECIFIED = true;
-                cliopts.BARS_SPECIFIED = true;
+                cliopts.FREQ_SPECIFIED = 1;
+                cliopts.BARS_SPECIFIED = 1;
                 if(optarg == NULL){
                     cliopts.FREQ_BREAKS = 0;
                 }
@@ -289,7 +291,7 @@ int main(int argc, char **argv){
          * send to handler "process_call()
          * that does all the work */
         if(optind+1 < argc){
-            MULTIPLE_FILES = true;
+            MULTIPLE_FILES = 1;
         }
         do{ 
             filename = argv[optind];

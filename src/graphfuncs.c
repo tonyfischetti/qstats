@@ -41,16 +41,21 @@ void draw_bars(int *data_array, int size){
      * displays it                            *
      ******************************************/
     struct winsize w;
+    int ncols;
+    int wiggle;
+    int sum = 0;
+    int i;
+    double themax;
+    double factor;
+    double *rel_freq;
     ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
-    int ncols = w.ws_col;
+    ncols = w.ws_col;
     /* wiggle room is the room to work with *
      * to draw the bars taking into account *
      * the rel_freqent of points in the buckets */
-    int wiggle = ncols - 15;
-    double rel_freq[size];
+    wiggle = ncols - 15;
+    rel_freq = (double *) malloc(size * sizeof(double));
 
-    int sum = 0;
-    int i;
     for(i = 0; i < size; i++){
         sum += data_array[i];
     }
@@ -64,23 +69,23 @@ void draw_bars(int *data_array, int size){
     /* find the max value to determine the *
      * factor to to multiply all values    *
      * with to scale all bars in chart     */
-    double themax = rel_freq[0];
+    themax = rel_freq[0];
     for(i = 0; i < size; i++){
         if(rel_freq[i] > themax){
             themax = rel_freq[i];
         }
     }
 
-    double factor;
     factor = wiggle/themax;
     
     for(i = 0; i < size; i++){
+        int m;
         int thenum = rel_freq[i];
         printf("%0.1f%%\t", rel_freq[i]);
-        int m;
         for(m = 0; m < floor(factor*thenum); m++){
             printf("#");
         }
         printf("\n");
     }
+    free(rel_freq);
 }

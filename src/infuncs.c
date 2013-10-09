@@ -43,6 +43,7 @@ int read_column(double** delivery_array, FILE *input){
     int index = 0;
     int size = 50;
     double *build_array;
+    double *temp;
 
     if(!input){
         input = stdin;
@@ -55,10 +56,10 @@ int read_column(double** delivery_array, FILE *input){
     }
 
     while(fgets(line, sizeof(line), input) != NULL){
+        int ret_val;
         if(!strcmp(line, "\n")){
             continue;
         }
-        int ret_val;
         ret_val = sscanf(line, "%lf", &current);
         if(ret_val == 0){
             fputs("Error parsing numerics\n", stderr);
@@ -84,7 +85,6 @@ int read_column(double** delivery_array, FILE *input){
     size = index;
 
     /* resize to not waste memory */
-    double *temp;
     temp = realloc(build_array, size * sizeof(double));
     if(temp == NULL){
         free(build_array);

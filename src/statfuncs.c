@@ -66,15 +66,15 @@ void make_intervals(double themin, double themax,
      ****************************************************/
     double range = themax - themin;
     double *to_return_array;
+    int to_return_arrayindex = 0;
+    double upto = themin;
+    double thedivide = range/breaks-1;
+    int i;
     to_return_array = (double *) malloc((breaks+1) * sizeof(double));
     if(to_return_array == NULL){
         fputs("Error allocating memory", stderr);
         exit(EXIT_FAILURE);
     }
-    int to_return_arrayindex = 0;
-    double upto = themin;
-    double thedivide = range/breaks-1;
-    int i;
     for(i=0; i < breaks; i++){
         double newupto = i*thedivide+((i-1)*1)+themin+1;
         to_return_array[to_return_arrayindex] = newupto;
@@ -107,21 +107,21 @@ void deliver_frequencies(int size, double *data_array, int breaks,
     double *intervals;
     double themin = data_array[0];
     double themax = data_array[size-1];
+    int *buckets;
+    int j;
+    int place_in_bucket = 0;
+    int the_bound = 1;
+    int k;
     make_intervals(themin, themax, breaks, &intervals);
     *delivery_intervals = intervals;
-    int *buckets;
     buckets = (int *) malloc(breaks * sizeof(int));
     if(buckets == NULL){
         fputs("Error allocating memory", stderr);
         exit(EXIT_FAILURE);
     }
-    int j;
     for(j = 0; j < breaks; j++){
         buckets[j] = 0;
     }
-    int place_in_bucket = 0;
-    int the_bound = 1;
-    int k;
     for(k = 0; k < size; k++){
         double num = data_array[k];
         if(num < intervals[the_bound]){
@@ -148,10 +148,11 @@ int get_uniques(double *data_array, int size, double** delivery_uniques){
     /* have to assume that the array of unique elements *
      * is the same size as the original                 */
     double *uniques;
-    uniques = (double *) malloc(size * sizeof(double));
     int new_size = 1;
     int old_index;
     int new_index = 1;
+    double *temp;
+    uniques = (double *) malloc(size * sizeof(double));
     uniques[0] = last_value;
     for(old_index=1; old_index < size; old_index++){
         if(!(fabs(last_value - data_array[old_index]) <= .0001)){
@@ -162,7 +163,6 @@ int get_uniques(double *data_array, int size, double** delivery_uniques){
         }
     }
     /* resize array */
-    double *temp;
     temp = realloc(uniques, new_size * sizeof(double));
     if(temp == NULL){
         free(uniques);
@@ -178,11 +178,11 @@ int get_uniques(double *data_array, int size, double** delivery_uniques){
 
 double *get_quartiles(double *data_array, int size){
     /********************************************
-     * Takes a sorted data_array of doubles          *
+     * Takes a sorted data_array of doubles     *
      * and returns the first, second (median),  *
      * and third quartiles                      *
      ********************************************/
-    static double ret_ar[2];
+    static double ret_ar[3];
     double median;
     double first_quartile;
     double third_quartile;
