@@ -1,14 +1,13 @@
 
-PREFIX=/usr/local/bin
-BINDIR=./bin/
-MKDIR_P=mkdir -p
+PREFIX=/usr/local
+BUILTDIR=./bin/
 
-all: bindir
+all: builtdir
 	cd ./src && make
 	mv ./src/qstats ./bin/
 
-bindir:
-	$(MKDIR_P) $(BINDIR)
+builtdir:
+	mkdir -p $(BUILTDIR)
 
 clean:
 	cd ./src && make clean
@@ -16,9 +15,9 @@ clean:
 	rm -rf ./bin/
 
 install: all
-	cp ./bin/qstats $(PREFIX)
+	cp ./bin/qstats $(PREFIX)/bin
 
 uninstall:
-	rm -f /usr/local/bin/qstats
+	rm -f $(PREFIX)/bin/qstats
 
 .PHONY: all test clean install
