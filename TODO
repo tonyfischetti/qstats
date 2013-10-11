@@ -1,3 +1,8 @@
+fix issue where specifying both -f and -b only prints
+-b
+
+fix installation man/apropos/whatis mess
+
 flesh out header files, try to move as much into
 the header files as possible
 
@@ -16,7 +21,5 @@ More robust to memory limitations: look into temporary storage files
 Be more clear with parsing errors
 
 Have -u mode for utility output
-
-Be robust with respect to data type limits
 
 Consider using forks more multiprocessing

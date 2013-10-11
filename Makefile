@@ -1,5 +1,6 @@
 
 PREFIX=/usr/local
+MANPREFIX=/usr/local/share/
 BUILTDIR=./bin/
 
 all: builtdir
@@ -16,8 +17,10 @@ clean:
 
 install: all
 	cp ./bin/qstats $(PREFIX)/bin
+	cp ./doc/qstats.1 $(MANPREFIX)/man/man1
 
 uninstall:
 	rm -f $(PREFIX)/bin/qstats
+	rm -f $(MANPREFIX)/man/man1/qstats.1
 
 .PHONY: all test clean install

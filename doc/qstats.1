@@ -1,0 +1,49 @@
+.TH QSTATS 1 "OCT 2013" 
+.SH NAME
+qstats \- a quick and dirty statistics tool for the Unix pipeline
+.SH SYNOPSIS
+.B foo [-smhl] [-f<breaks>] [-b<breaks>]
+.I file
+.B ...
+.SH DESCRIPTION
+.B qstats
+This tool reads one column of numeric data from either a file 
+(or multiple files) or from stdin, and computes various summary 
+statistics on it. Although it can be used directly on file(s), 
+this is meant to be used mostly as the final command on a shell
+pipeline combining 
+.BR cut (1),
+.BR tail (1),
+.BR awk (1),
+etc. on a tabular data file.
+.SH OPTIONS
+.IP -m
+computes the mean
+.IP -s
+computes various summary statistics including min, max, quartiles, mean,
+median, range, standard deviation (population), and length. This is the
+default behavior if no flags are used.
+.IP -l
+outputs the length (equivalent to wc -l)
+.IP -h
+prints the help and usage
+.IP "-f<breaks>"
+creates a frequncy tabulation of the data points contained in 'breaks' number
+of equally spaced bins. If no number if provided, then Sturge's Rule is used
+to estimate the appropriate number of bins.
+.IP "-b<breaks>"
+creates an ASCII-art histogram (horizontal bar chart) representation of the 
+density of the data points contained in 'breaks' number of equally spaced 
+bins. If no number if provided, then Sturge's Rule is used to estimate 
+the appropriate number of bins.
+.SH BUGS
+ \- only takes in numerics that do not exceed 50 digits long
+ \- only is able to import and compute statistics on data that
+can fit within memory
+.SH AUTHOR
+Tony Fischetti <tony.fischetti at gmail.com>
+.SH "SEE ALSO"
+.BR awk (1),
+.BR cut (1),
+.BR tail (1),
+.BR bc (1),
