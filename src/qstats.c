@@ -128,7 +128,7 @@ int process_call(FILE* input, Cliopts cliopts){
         if(cliopts.BARS_SPECIFIED == 1){
             draw_bars(buckets, breaks);
         }
-        else{
+        if(cliopts.FREQ_SPECIFICALLY == 1){
             /* first we have to find the max length string
              * in order to format properly */
             int m;
@@ -200,6 +200,8 @@ int main(int argc, char **argv){
     cliopts.LENGTH_SPECIFIED = 0;
     cliopts.FREQ_SPECIFIED = 0;
     cliopts.BARS_SPECIFIED = 0;
+    cliopts.FREQ_BREAKS = 0;
+    cliopts.FREQ_SPECIFICALLY = 0;
 
     /* process command-line arguments */ 
     while(1){
@@ -242,6 +244,7 @@ int main(int argc, char **argv){
                 break;
             case 'f':
                 cliopts.FREQ_SPECIFIED = 1;
+                cliopts.FREQ_SPECIFICALLY = 1;
                 if(optarg == NULL){
                     cliopts.FREQ_BREAKS = 0;
                 }

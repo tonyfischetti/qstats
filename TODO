@@ -1,5 +1,4 @@
-fix issue where specifying both -f and -b only prints
--b
+Fix freq and bars logic
 
 fix installation man/apropos/whatis mess
 

@@ -29,4 +29,5 @@ typedef struct Cliopts{
     int FREQ_SPECIFIED;
     int BARS_SPECIFIED;
     int FREQ_BREAKS;
+    int FREQ_SPECIFICALLY;
 } Cliopts;
