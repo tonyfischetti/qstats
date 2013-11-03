@@ -1,4 +1,4 @@
-.TH QSTATS 1 "OCT 2013" 
+.TH QSTATS 1 "NOV 2013" 
 .SH NAME
 qstats \- a quick and dirty statistics tool for the Unix pipeline
 .SH SYNOPSIS
@@ -36,6 +36,23 @@ creates an ASCII-art histogram (horizontal bar chart) representation of the
 density of the data points contained in 'breaks' number of equally spaced 
 bins. If no number if provided, then Sturge's Rule is used to estimate 
 the appropriate number of bins.
+.SH EXAMPLES
+.IP "echo -e '5\en1\en3' | qstats -m"
+Compute a simple mean of a small number of numerics. This uses `echo` to
+produce a small column of numerics which then gets processed by qstats.
+.IP "qstats -s a_file.dat another.dat"
+Compute summary statistics on two files, each containing only a column
+of numeric data, and print them both out preceded by the filename (so
+you know which one is which)
+.IP "grep 'COND1' mycsv.csv | cut -d , -f 2 | tail +2 | qstats -s"
+Only process lines in a CSV that includes the string 'COND1' (subset
+the CSV), extract to 2nd column, remove the first line (very often a
+non-numeric header string) and compute summary statistics on it.
+.IP "tr , '\en' < file.txt | qstats"
+qstats does not handle data that is not in column format.
+Given a file that contains numeric data separated by commas, the `tr`
+command with these arguments will convert the commas into newlines so that
+qstats can process it.
 .SH BUGS
  \- only takes in numerics that do not exceed 50 digits long
  \- only is able to import and compute statistics on data that

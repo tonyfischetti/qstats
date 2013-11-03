@@ -20,18 +20,25 @@ usage of to compute mean would be:
 
     echo -e "5\n1\n3" | qstats -m
 
-A more realistic example would be to subset a CSV by a condition, extract
-one column (with awk), remove the header and grab summary statistics:
 
-    grep "COND1" mycsv.csv | awk -F, '{print $2}' | tail +2 | qstats -s
+qstats also takes a filename (or multiple filenames) as an argument. This
+line will compute summary statistics on two files, each containing only
+one column of numeric data, and print them both out preceded by the file
+name (so you know which one is which)
+
+    qstats -s a_file.dat another_file.dat
+
+
+A more realistic example would be to subset a CSV by a condition, extract
+one column (with cut or awk), remove the header and grab summary statistics:
+
+    grep "COND1" mycsv.csv | cut -d , -f 2 | tail +2 | qstats -s
 
 If you need to get stats on, say, a comma separated text file of numerical
 values that is not in column format, you can use tr (translation) to
 substitute commas for newlines and pipe it to the program:
 
-    cat afile | tr , '\n' | qstats
-
-(I like to use unecessary "cat"s)
+    tr , '\n' < file.txt | qstats
 
 
 You can also call this tool with filenames as arguments, but it's utility

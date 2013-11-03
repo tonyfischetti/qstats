@@ -1,7 +1,9 @@
 
 
 CC=gcc
-CFLAGS=-Wall -Wextra -Werror -Wwrite-strings -Wundef -Wmissing-noreturn -Wstrict-prototypes -std=c89 -pedantic -O2 -I../include
+# CFLAGS used for development
+# CFLAGS=-Wall -Wextra -Werror -Wwrite-strings -Wundef -Wmissing-noreturn -Wstrict-prototypes -std=c89 -pedantic -O2 -I../include
+CFLAGS=-Wall -O2 -I../include
 LDFLAGS=-lm
 DEPS = statfuncs.h infuncs.h graphfuncs.h qstats.h
 
