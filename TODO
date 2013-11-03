@@ -1,19 +1,9 @@
-Fix freq and bars logic
-
-fix installation man/apropos/whatis mess
-
 flesh out header files, try to move as much into
 the header files as possible
 
 Create more flags (like for stddev) and exclusionary logic
 
 use math.h floating point capabilities
-
-write configure script
-
-add more stats
-
-write man file
 
 More robust to memory limitations: look into temporary storage files
 
