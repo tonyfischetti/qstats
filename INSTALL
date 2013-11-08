@@ -14,10 +14,10 @@ To uninstall:
 The default installation prefix is /usr/local/ which means
 the binary will try to be installed in /usr/local/bin and
 the manual documentation will try to be installed in 
-/usr/local/share
+/usr/local/man
 If you, dear installer, plan on keeping these installation
 directories, make sure that both "/usr/local/bin" and 
-"usr/local/share/man/man1" exists and that they are in your
+"usr/local/man/man1" exists and that they are in your
 $PATH and $MANPATH, respectively.
 
 On OS X, *don't* mess with the MANPATH; the manpath is
@@ -28,5 +28,5 @@ apropos and whatis registry, you have to force run
 makewhatis (which, isn't on your path) on the directory
 of the man page install. It will look something like this:
 
-    $ sudo /usr/libexec/makewhatis /usr/local/share/man/
+    $ sudo /usr/libexec/makewhatis /usr/local/man/
 
