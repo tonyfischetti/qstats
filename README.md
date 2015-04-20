@@ -41,11 +41,6 @@ substitute commas for newlines and pipe it to the program:
     tr , '\n' < file.txt | qstats
 
 
-You can also call this tool with filenames as arguments, but it's utility
-that way is limited because, for the time being, it can only read input
-that is one column long of just numerics--and very few files are one
-column long in nature.
-
 
 ### Installation
 
