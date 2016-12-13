@@ -2,7 +2,7 @@
 .SH NAME
 qstats \- a quick and dirty statistics tool for the Unix pipeline
 .SH SYNOPSIS
-.B qstats [-smhl] [-f<breaks>] [-b<breaks>]
+.B qstats [-smahl] [-f<breaks>] [-b<breaks>]
 .I file
 .B ...
 .SH DESCRIPTION
@@ -17,21 +17,30 @@ pipeline combining
 .BR awk (1),
 etc. on a tabular data file.
 .SH OPTIONS
-.IP -m
+.TP
+.BR -m, \-\-mean
 computes the mean
-.IP -s
+.TP
+.BR -a, \-\-add
+computes the sum (add)
+.TP
+.BR -s, \-\-summary
 computes various summary statistics including min, max, quartiles, mean,
 median, range, standard deviation (population), sum, and length. This is the
 default behavior if no flags are used.
-.IP -l
+.TP
+.BR -l, \-\-length
 outputs the length (equivalent to wc -l)
-.IP -h
+.TP
+.BR -h, \-\-help
 prints the help and usage
-.IP "-f<breaks>"
+.TP
+.BR "-f<breaks>", \-\-frequencies=<breaks>
 creates a frequncy tabulation of the data points contained in 'breaks' number
 of equally spaced bins. If no number if provided, then Sturge's Rule is used
 to estimate the appropriate number of bins.
-.IP "-b<breaks>"
+.TP
+.BR "-b<breaks>", \-\-bars=<breaks>
 creates an ASCII-art histogram (horizontal bar chart) representation of the 
 density of the data points contained in 'breaks' number of equally spaced 
 bins. If no number if provided, then Sturge's Rule is used to estimate 

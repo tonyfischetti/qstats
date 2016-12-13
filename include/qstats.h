@@ -24,6 +24,7 @@
 
 typedef struct Cliopts{
     int MEAN_SPECIFIED;
+    int ADD_SPECIFIED;
     int SUMMARY_SPECIFIED;
     int LENGTH_SPECIFIED;
     int FREQ_SPECIFIED;

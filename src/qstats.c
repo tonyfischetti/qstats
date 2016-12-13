@@ -40,7 +40,7 @@ const char *header_text =
     "Unix pipeline\n";
 
 const char *usage_text =
-    "\nusage: qstats [-mshl | -f<breaks> | -b<breaks>] file\n";
+    "\nusage: qstats [-mashl | -f<breaks> | -b<breaks>] file\n";
 
 
 int comp_func(const void * a, const void * b) {
@@ -71,6 +71,7 @@ int process_call(FILE* input, Cliopts cliopts){
      * the appropriate output is printed.         *
      **********************************************/ 
     static int MEAN_FLAG = 0;
+    static int ADD_FLAG = 0;
     static int SUMMARY_FLAG = 0;
     static int LENGTH_FLAG = 0;
     static int FREQ_FLAG = 0;
@@ -85,6 +86,9 @@ int process_call(FILE* input, Cliopts cliopts){
     if(cliopts.MEAN_SPECIFIED){
         MEAN_FLAG = 1;
     }
+    if(cliopts.ADD_SPECIFIED){
+        ADD_FLAG = 1;
+    }
     if(cliopts.SUMMARY_SPECIFIED){
         SUMMARY_FLAG = 1;
     } 
@@ -95,7 +99,8 @@ int process_call(FILE* input, Cliopts cliopts){
         FREQ_FLAG = 1;
     }
     if((cliopts.FREQ_SPECIFIED + cliopts.LENGTH_SPECIFIED + 
-        cliopts.SUMMARY_SPECIFIED + cliopts.MEAN_SPECIFIED) == 0){
+        cliopts.SUMMARY_SPECIFIED + cliopts.MEAN_SPECIFIED +
+        cliopts.ADD_SPECIFIED) == 0){
         /* summary is default */
         SUMMARY_FLAG = 1;
     }
@@ -103,6 +108,11 @@ int process_call(FILE* input, Cliopts cliopts){
     /* only sort if needed */
     if((SUMMARY_FLAG + FREQ_FLAG) > 0){
         qsort(data_array, size, sizeof(double), comp_func);
+    }
+
+    if(ADD_FLAG){
+        double sum = get_sum(data_array, size);
+        printf("%g\n", sum);
     }
 
     if(MEAN_FLAG){
@@ -201,6 +211,7 @@ int main(int argc, char **argv){
     /* initialize the options holder struct */
     Cliopts cliopts;
     cliopts.MEAN_SPECIFIED = 0;
+    cliopts.ADD_SPECIFIED = 0;
     cliopts.SUMMARY_SPECIFIED = 0;
     cliopts.LENGTH_SPECIFIED = 0;
     cliopts.FREQ_SPECIFIED = 0;
@@ -213,6 +224,7 @@ int main(int argc, char **argv){
         static struct option long_options[] = 
         {
             {"mean",    no_argument, 0, 'm'},
+            {"add",    no_argument, 0, 'a'},
             {"summary", no_argument, 0, 's'},
             {"frequencies", optional_argument, 0, 'f'},
             {"bars", optional_argument, 0, 'b'},
@@ -223,7 +235,7 @@ int main(int argc, char **argv){
 
         int option_index = 0;
 
-        c = getopt_long(argc, argv, "smhlf::b::", 
+        c = getopt_long(argc, argv, "smahlf::b::", 
                         long_options, &option_index);
 
         if(c == -1)
@@ -240,6 +252,9 @@ int main(int argc, char **argv){
                 break;
             case 'm':
                 cliopts.MEAN_SPECIFIED = 1;
+                break;
+            case 'a':
+                cliopts.ADD_SPECIFIED = 1;
                 break;
             case 's':
                 cliopts.SUMMARY_SPECIFIED = 1;
