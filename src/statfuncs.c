@@ -1,5 +1,5 @@
 
-/* Copyright (c) 2013, Tony Fischetti
+/* Copyright (c) 2013, 2016, Tony Fischetti
  *
  * MIT License, http://www.opensource.org/licenses/mit-license.php
  * 
@@ -29,7 +29,7 @@
 #include <float.h>
 
 
-double get_mean(double *data_array, int size){
+double get_sum(double *data_array, int size){
     /* self-explanatory */
     double sum = 0;
     double mean;
@@ -37,8 +37,7 @@ double get_mean(double *data_array, int size){
     for(i = 0; i < size; i++){
         sum += data_array[i];
     }
-    mean = sum/size;
-    return(mean);
+    return sum;
 }
 
 double get_standard_deviation(double *data_array, double mean, int size){

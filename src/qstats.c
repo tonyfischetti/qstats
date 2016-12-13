@@ -1,5 +1,5 @@
 
-/* Copyright (c) 2013, Tony Fischetti
+/* Copyright (c) 2013, 2016, Tony Fischetti
  *
  * MIT License, http://www.opensource.org/licenses/mit-license.php
  * 
@@ -52,7 +52,8 @@ int comp_func(const void * a, const void * b) {
     if (*x < *y){
         return -1;
     }
-    else if (*x > *y) return 1; return 0;
+    else if (*x > *y) return 1;
+    return 0;
 }
 
 
@@ -105,7 +106,8 @@ int process_call(FILE* input, Cliopts cliopts){
     }
 
     if(MEAN_FLAG){
-        double mean = get_mean(data_array, size);
+        double sum = get_sum(data_array, size);
+        double mean = sum/size;
         printf("%g\n", mean);
     }
 
@@ -155,7 +157,8 @@ int process_call(FILE* input, Cliopts cliopts){
 
     if(SUMMARY_FLAG){
         double *quartile_call_result;
-        double mean = get_mean(data_array, size);
+        double sum = get_sum(data_array, size);
+        double mean = sum/size;
         double the_min = data_array[0];
         double the_max = data_array[size-1];
         double stddev = get_standard_deviation(data_array, mean, size);
@@ -180,6 +183,7 @@ int process_call(FILE* input, Cliopts cliopts){
         printf("Max.     %g\n", the_max);
         printf("Range    %g\n", (the_max - the_min));
         printf("Std Dev. %g\n", stddev);
+        printf("Sum      %g\n", sum);
         printf("Length   %d\n", size);
     }
 

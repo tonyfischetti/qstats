@@ -1,5 +1,5 @@
 
-/* Copyright (c) 2013, Tony Fischetti
+/* Copyright (c) 2013, 2016, Tony Fischetti
  *
  * MIT License, http://www.opensource.org/licenses/mit-license.php
  * 
@@ -26,7 +26,7 @@
 #ifndef STATFUNCS_H
 #define STATFUNCS_H
 
-double get_mean(double*, int);
+double get_sum(double*, int);
 
 double get_standard_deviation(double*, double, int);
 
